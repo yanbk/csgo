@@ -26,6 +26,30 @@ const routes = [
         meta: {
             title: '开箱'
         }
+    },
+    {
+        path: '/case/:id',
+        name: 'Case',
+        component: () => import('@/views/case.vue'),
+        meta: {
+            title: '宝箱'
+        }
+    },
+    {
+        path: '/contact',
+        name: 'Contact',
+        component: () => import('@/views/contact.vue'),
+        meta: {
+            title: '开箱'
+        }
+    },
+    {
+        path: '/bag',
+        name: 'Bag',
+        component: () => import('@/views/bag.vue'),
+        meta: {
+            title: '开箱'
+        }
     }
 ]
 

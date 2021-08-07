@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="background: #1a1a1a">
         <RollList />
         <div class="hotbox">
             <div class="hot-title">
@@ -8,52 +8,16 @@
             </div>
             <div class="box">
                 <div class="box-list">
-                    <router-link to="" class="item-wrap">
+                    <router-link v-for="item in list.hot" :key="item.id" :to="'/case/' + item.id" class="item-wrap">
                         <div class="case-pic">
-                            <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
+                            <img src="@/assets/img/600fd8a39b76c.webp">
                         </div>
                         <img src="@/assets/img/600fd8b97edc0.webp" class="item-pic">
-                        <div class="name">珍藏</div>
-                        <div class="price">$179.99</div>
-                        <div class="open-case" data-v-23ca9126="">
-                            <div class="hover-text" data-v-23ca9126="">开箱</div>
-                            <div class="hover-price" data-v-23ca9126="">$179.99</div>
-                        </div>
-                    </router-link>
-                    <router-link to="" class="item-wrap">
-                        <div class="case-pic">
-                            <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
-                        </div>
-                        <img src="@/assets/img/600fd8b97edc0.webp" class="item-pic">
-                        <div class="name">珍藏</div>
-                        <div class="price">$179.99</div>
-                        <div class="open-case" data-v-23ca9126="">
-                            <div class="hover-text" data-v-23ca9126="">开箱</div>
-                            <div class="hover-price" data-v-23ca9126="">$179.99</div>
-                        </div>
-                    </router-link>
-                    <router-link to="" class="item-wrap">
-                        <div class="case-pic">
-                            <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
-                        </div>
-                        <img src="@/assets/img/600fd8b97edc0.webp" class="item-pic">
-                        <div class="name">珍藏</div>
-                        <div class="price">$179.99</div>
-                        <div class="open-case" data-v-23ca9126="">
-                            <div class="hover-text" data-v-23ca9126="">开箱</div>
-                            <div class="hover-price" data-v-23ca9126="">$179.99</div>
-                        </div>
-                    </router-link>
-                    <router-link to="" class="item-wrap">
-                        <div class="case-pic">
-                            <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
-                        </div>
-                        <img src="@/assets/img/600fd8b97edc0.webp" class="item-pic">
-                        <div class="name">珍藏</div>
-                        <div class="price">$179.99</div>
-                        <div class="open-case" data-v-23ca9126="">
-                            <div class="hover-text" data-v-23ca9126="">开箱</div>
-                            <div class="hover-price" data-v-23ca9126="">$179.99</div>
+                        <div class="name">{{ item.title }}</div>
+                        <div class="price">${{ item.price }}</div>
+                        <div class="open-case">
+                            <div class="hover-text">开箱</div>
+                            <div class="hover-price">${{ item.price }}</div>
                         </div>
                     </router-link>
                 </div>
@@ -64,52 +28,16 @@
             </div>
             <div class="box" style="background: #1a1a1a">
                 <div class="box-list">
-                    <router-link to="" class="item-wrap">
+                    <router-link v-for="item in list.discount" :key="item.id" :to="'/case/' + item.id" class="item-wrap">
                         <div class="case-pic">
-                            <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
+                            <img src="@/assets/img/600fd8a39b76c.webp">
                         </div>
                         <img src="@/assets/img/600fd8b97edc0.webp" class="item-pic">
-                        <div class="name">珍藏</div>
-                        <div class="price">$179.99</div>
-                        <div class="open-case" data-v-23ca9126="">
-                            <div class="hover-text" data-v-23ca9126="">开箱</div>
-                            <div class="hover-price" data-v-23ca9126="">$179.99</div>
-                        </div>
-                    </router-link>
-                    <router-link to="" class="item-wrap">
-                        <div class="case-pic">
-                            <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
-                        </div>
-                        <img src="@/assets/img/600fd8b97edc0.webp" class="item-pic">
-                        <div class="name">珍藏</div>
-                        <div class="price">$179.99</div>
-                        <div class="open-case" data-v-23ca9126="">
-                            <div class="hover-text" data-v-23ca9126="">开箱</div>
-                            <div class="hover-price" data-v-23ca9126="">$179.99</div>
-                        </div>
-                    </router-link>
-                    <router-link to="" class="item-wrap">
-                        <div class="case-pic">
-                            <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
-                        </div>
-                        <img src="@/assets/img/600fd8b97edc0.webp" class="item-pic">
-                        <div class="name">珍藏</div>
-                        <div class="price">$179.99</div>
-                        <div class="open-case" data-v-23ca9126="">
-                            <div class="hover-text" data-v-23ca9126="">开箱</div>
-                            <div class="hover-price" data-v-23ca9126="">$179.99</div>
-                        </div>
-                    </router-link>
-                    <router-link to="" class="item-wrap">
-                        <div class="case-pic">
-                            <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
-                        </div>
-                        <img src="@/assets/img/600fd8b97edc0.webp" class="item-pic">
-                        <div class="name">珍藏</div>
-                        <div class="price">$179.99</div>
-                        <div class="open-case" data-v-23ca9126="">
-                            <div class="hover-text" data-v-23ca9126="">开箱</div>
-                            <div class="hover-price" data-v-23ca9126="">$179.99</div>
+                        <div class="name" style="color: #ec342e">{{ item.title }}<span class="original-price">原价${{ item.original_price }}</span></div>
+                        <div class="price" style="color: #ec342e">${{ item.price }}</div>
+                        <div class="open-case">
+                            <div class="hover-text">开箱</div>
+                            <div class="hover-price">${{ item.price }}</div>
                         </div>
                     </router-link>
                 </div>
@@ -122,20 +50,26 @@
 import hotTitle from '@/assets/img/index-case-hot-title.webp'
 import saleTitle from '@/assets/img/index-case-onsale-title.webp'
 import RollList from '@/components/rollList.vue'
+import {
+    boxList
+} from '@/api/box'
 export default {
     data() {
         return {
             hotTitle,
-            saleTitle
+            saleTitle,
+            list: {}
         }
     },
     components: {
         RollList
     },
     created() {
-        
-        document.addEventListener('visibilitychange', () => {
-            console.log(111)
+        boxList().then(res => {
+            console.log(res)
+            if (res.errno == 0) {
+                this.list = res.data.list
+            }
         })
     },
     methods: {
@@ -181,11 +115,18 @@ export default {
 }
 .item-wrap{
     display: block;
-    width: 300px;
+    width: 250px;
     position: relative;
     margin: 0 30px 50px 0;
 }
+.case-pic{
+    width: 250px;
+}
+.case-pic img{
+    width: 100%;
+}
 .item-pic{
+    width: 250px;
     position: absolute;
     left: 0px;
     top: 0px;
@@ -199,6 +140,25 @@ export default {
     position: relative;
     z-index: 2;
     margin-bottom: 10px;
+    position: relative;
+}
+.original-price{
+    position: absolute;
+    top: 0;
+    right: 15px;
+    font-size: 12px;
+    line-height: 26px;
+    color: #959595;
+}
+.original-price::before{
+    display: block;
+    content: "";
+    position: absolute;
+    height: 1px;
+    left: -3px;
+    right: -3px;
+    top: 12px;
+    background-color: #fb342e;
 }
 .open-case{
     display: none;

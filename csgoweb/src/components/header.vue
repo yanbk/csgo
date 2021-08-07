@@ -7,15 +7,15 @@
         <router-link to="/roll">
             <span>Roll福利</span>
         </router-link>
-        <!-- <router-link to="/contact">
+        <router-link to="/contact">
             <span>合作伙伴</span>
         </router-link>
         <router-link to="/bag">
             <span>我的背包</span>
-        </router-link> -->
-        <router-link to="/">
-            <h1 style="color: #fff">{{ steamId }}</h1>
         </router-link>
+        <div class="login-btn" @click="login">
+            登录 / 注册
+        </div>
     </div>
 </template>
 <script>
@@ -27,12 +27,11 @@ export default {
             return this.$store.state.user.steamid
         }
     },
-    watch: {
-        '$store.state.user.steamid': function(val) {
-            console.log(val)
-            return val
+    methods: {
+        login() {
+            this.$store.commit('admin/loginShow', true)
         }
-    }
+    },
 }
 </script>
 <style scoped>
@@ -42,6 +41,7 @@ export default {
     }
     .header a{
         display: flex;
+        font-size: 16px;
         text-align: center;
         width: 140px;
         height: 90px;
@@ -58,5 +58,18 @@ export default {
     }
     .header a:hover{
         color: #999;
+    }
+    .login-btn{
+        width: 100px;
+        font-size: 16px;
+        color: #ffd43e;
+        text-align: center;
+        line-height: 90px;
+        float: right;
+        cursor: pointer;
+    }
+    .login-btn:hover{
+        background: #999;
+        color: #fff;
     }
 </style>
