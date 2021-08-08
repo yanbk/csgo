@@ -12,11 +12,7 @@ export default {
         }
     },
     mounted() {
-        // setTimeout(function() {
-        //     window.opener.location.reload(false)
-        //     window.close()
-        //     window.open(" ","_self").close()
-        // }, 2000)
+        
     },
     methods: {
         

@@ -44,6 +44,7 @@ import {
     userLogin,
     editPassword
 } from '@/api/user'
+import { formData } from '@/utils/form'
 export default {
     data() {
         return {
@@ -108,13 +109,14 @@ export default {
                     alert('请确认已满18周岁')
                     return
                 }
-                userLogin({
+                userLogin(formData({
                     phone_number: this.mobile,
                     password: this.password
-                }).then(res => {
+                })).then(res => {
                     console.log(res)
                     if (res.errno == 0) {
                         this.$store.commit('admin/loginShow', false)
+                        this.$store.dispatch('user/getInfo')
                     } else {
                         alert(res.errmsg)
                     }

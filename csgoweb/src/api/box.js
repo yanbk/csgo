@@ -13,3 +13,5 @@ export const boxInfo = (data) => {
         params: data
     })
 }
+
+

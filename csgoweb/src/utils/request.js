@@ -1,6 +1,6 @@
 import axios from 'axios'
 // import { Message } from 'element-ui'
-import { store } from '@/store'
+// import { store } from '@/store'
 // import { getStorage } from '@/utils/storage'
 // import { store } from '../store'
 
@@ -26,10 +26,12 @@ setService(payService)
 function setService(service) {
   service.interceptors.request.use(
     config => {
-      const token = store.state.user.token
-      if (token) {
-        config.headers['token'] = token
-      }
+      // const uid = store.state.user.csgoUid
+      // const token = store.state.user.csgoToken
+      // if (token) {
+      //   config.headers['uid'] = uid
+      //   config.headers['token'] = token
+      // }
       return config
     },
     error => {

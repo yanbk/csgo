@@ -59,6 +59,11 @@ a{
   justify-content: flex-start;
   align-items: center;
 }
+.flex-row-between{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .pop{
   width: 100%;
   height: 100%;

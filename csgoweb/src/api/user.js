@@ -1,4 +1,4 @@
-import { passportService } from '@/utils/request'
+import { passportService, apiService } from '@/utils/request'
 
 export const getSms = (data) => {
     return passportService({
@@ -19,8 +19,8 @@ export const userReg = (data) => {
 export const userLogin = (data) => {
     return passportService({
         url: "/mobile/login",
-        method: 'get',
-        params: data
+        method: 'post',
+        data
     })
 }
 
@@ -29,5 +29,13 @@ export const editPassword = (data) => {
         url: "/mobile/editpasswd",
         method: 'get',
         params: data
+    })
+}
+
+export const getInfo = (data) => {
+    return apiService({
+        url: "/user/info",
+        method: 'post',
+        data
     })
 }

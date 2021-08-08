@@ -24,7 +24,15 @@ const routes = [
         name: 'Roll',
         component: () => import('@/views/roll.vue'),
         meta: {
-            title: '开箱'
+            title: 'ROLL福利'
+        }
+    },
+    {
+        path: '/roll/detail/:id',
+        name: 'RollDetail',
+        component: () => import('@/views/rollDetail.vue'),
+        meta: {
+            title: 'ROLL福利'
         }
     },
     {
