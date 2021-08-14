@@ -13,7 +13,7 @@
                         <div class="time">18:00:00</div>
                     </div>
                 </div>
-                <div class="flex-row-between">
+                <div class="flex-row-between" style="padding: 0 15px">
                     <div class="left-wrap flex-row-center">
                         <div class="img-wrap">
                             <img src="@/assets/img/169f5426c4d388dcc6a069c08b64bdf368cf2b07.webp">

@@ -1,7 +1,7 @@
 <template>
     <div v-if="isPop" class="pop">
         <div class="login">
-            <div class="close" @click="close">x</div>
+            <div class="close" @click="close"><svg-icon icon-class="CloseCircle"></svg-icon></div>
             <div class="login-nav flex-row-start">
                 <div :class="'nav-list ' + (navIndex == 1 ? 'nav-list-act' : '')" @click="navIndexChange(1)">登录</div>
                 <div :class="'nav-list ' + (navIndex == 2 ? 'nav-list-act' : '')" @click="navIndexChange(2)">注册</div>
@@ -40,11 +40,9 @@
 <script>
 import {
     getSms,
-    userReg,
-    userLogin,
     editPassword
 } from '@/api/user'
-import { formData } from '@/utils/form'
+// import { formData } from '@/utils/form'
 export default {
     data() {
         return {
@@ -109,11 +107,11 @@ export default {
                     alert('请确认已满18周岁')
                     return
                 }
-                userLogin(formData({
+                let data = {
                     phone_number: this.mobile,
                     password: this.password
-                })).then(res => {
-                    console.log(res)
+                }
+                this.$store.dispatch('user/userLogin', data).then(res => {
                     if (res.errno == 0) {
                         this.$store.commit('admin/loginShow', false)
                         this.$store.dispatch('user/getInfo')
@@ -142,16 +140,17 @@ export default {
                     alert('请确认已满18周岁')
                     return
                 }
-                userReg({
+                let data = {
                     phone_number: this.mobile,
                     vercode: this.code,
                     password: this.password
-                }).then(res => {
-                    console.log(res)
+                }
+                this.$store.dispatch('user/userReg', data).then(res => {
                     if (res.errno == 0) {
                         this.$store.commit('admin/loginShow', false)
+                        this.$store.dispatch('user/getInfo')
                     } else {
-                        alert(res.message)
+                        alert(res.errmsg)
                     }
                 })
             } else {
@@ -329,11 +328,11 @@ export default {
     position: absolute;
     right: -30px;
     top: 0;
-    font-size: 20px;
+    font-size: 30px;
     color: #fff;
     line-height: 30px;
     text-align: center;
-    background: firebrick;
+    /* background: firebrick; */
     cursor: pointer;
 }
 </style>

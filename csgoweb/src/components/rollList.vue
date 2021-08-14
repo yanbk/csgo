@@ -1,6 +1,6 @@
 <template>
     <div class="roll-list">
-        <router-link to="/roll" class="item promotion" :style="'background: url(' + rollBgRed + ') no-repeat; background-size: auto 100%;'">
+        <router-link to="/roll" class="item promotion">
             <div class="img-wrap">
                 <img src="@/assets/img/dao.webp" class="weapon-pic">
             </div>
@@ -52,19 +52,20 @@ export default {
 </script>
 <style scoped>
 .roll-list{
-    padding: 0 40px;
-    height: 200px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    /* margin-left: 40px; */
+    /* height: 200px; */
+    flex-grow: 1;
 }
 .item{
+    -webkit-transform: scale(.9);
+    transform: scale(.9);
     display: flex;
     align-items: center;
-    max-width: 100%;
-    width: 600px;
+    /* max-width: 100%; */
+    width: 500px;
     height: 179px;
-    
+    background: url(~@/assets/img/index-roll-bg-red.png) no-repeat;
+    background-size: auto 100%;
 }
 .weapon-pic{
     width: 245px;

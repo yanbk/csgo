@@ -2,7 +2,7 @@
     <div class="header">
         <router-link to="/">
             <div class="icon flex-row-center">
-                <svg-icon icon-class="case" style="font-size: 34px"></svg-icon>
+                <svg-icon icon-class="case"></svg-icon>
             </div>
             <span>开箱</span>
         </router-link>
@@ -27,7 +27,7 @@
         <div v-if="!csgoUid" class="login-btn" @click="login">
             登录 / 注册
         </div>
-        <div v-else class="login-btn">
+        <div v-else class="login-btn" @click="test">
             {{ userinfo.nickname }}
         </div>
     </div>
@@ -47,6 +47,13 @@ export default {
     methods: {
         login() {
             this.$store.commit('admin/loginShow', true)
+        },
+        test() {
+            this.$store.commit('admin/showMessage', {
+                type: 'error',
+                show: true,
+                message: 'hahahhahah'
+            })
         }
     },
     created() {
@@ -74,14 +81,14 @@ export default {
         color: #fff;
     }
     .header .svg-icon{
-        font-size: 30px;
+        font-size: 32px;
     }
     .header a:hover{
         color: #999;
         opacity: 0.7;
     }
     .login-btn{
-        width: 100px;
+        width: 150px;
         font-size: 16px;
         color: #ffd43e;
         text-align: center;

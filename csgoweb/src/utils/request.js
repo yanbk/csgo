@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { formData } from '@/utils/form.js'
 // import { Message } from 'element-ui'
 // import { store } from '@/store'
 // import { getStorage } from '@/utils/storage'
@@ -32,6 +33,9 @@ function setService(service) {
       //   config.headers['uid'] = uid
       //   config.headers['token'] = token
       // }
+      if (config.method == 'post') {
+        config.data = formData(config.data)
+      }
       return config
     },
     error => {

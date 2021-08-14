@@ -3,7 +3,9 @@
     <NavHeader></NavHeader>
     <LiveDrop />
     <router-view></router-view>
-    <Login  v-if="isLogin"/>
+    <Footer></Footer>
+    <Message :msgObj="msgObj" />
+    <Login v-if="isLogin"/>
   </div>
 </template>
 
@@ -11,12 +13,16 @@
 import NavHeader from './components/header.vue'
 import LiveDrop from '@/components/liveDrop.vue'
 import Login from '@/components/login'
+import Footer from '@/components/footer.vue'
+import Message from '@/components/message.vue'
 export default {
   name: 'App',
   components: {
     NavHeader,
     LiveDrop,
-    Login
+    Login,
+    Footer,
+    Message
   },
   data() {
     return {
@@ -25,6 +31,9 @@ export default {
   computed: {
     isLogin() {
       return this.$store.state.admin.isLogin
+    },
+    msgObj() {
+      return this.$store.state.admin.msgObj
     }
   }
 }
@@ -62,6 +71,12 @@ a{
 .flex-row-between{
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+.flex-col-center{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 .pop{

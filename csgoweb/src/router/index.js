@@ -58,6 +58,14 @@ const routes = [
         meta: {
             title: '开箱'
         }
+    },
+    {
+        path: '/charge',
+        name: 'Charge',
+        component: () => import('@/views/charge.vue'),
+        meta: {
+            title: '充值'
+        }
     }
 ]
 

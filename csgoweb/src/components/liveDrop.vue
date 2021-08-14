@@ -1,6 +1,6 @@
 <template >
     <div class="live-drop">
-        <Drop :is-mask="true" />
+        <Drop v-for="item in 10" :key="item" :is-mask="true" />
     </div>
 </template>
 <script>

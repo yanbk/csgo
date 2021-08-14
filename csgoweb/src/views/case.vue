@@ -2,7 +2,7 @@
     <div style="background: #1a1a1a; overflow: hidden">
         <div class="warning-word"><svg-icon icon-class="warning" style="font-size: 20px; color: #ffd43e"/>本网站所有游戏均为为增加趣味性所设的休闲娱乐活动，请勿沉迷，理性消费；禁止利用互动活动进行赌博/欺诈/作弊/刷积分等违法违规行为。若有发现，我们将取消您的活动参与资格。</div>
         <div class="case-title">
-            <span>珍藏</span>
+            <span>{{ boxinfo.title }}</span>
             <div class="flex-row-center">
                 <span class="open-num-title">选择开箱数: </span>
                 <div :class="'item ' + (num == 1 ? 'selected' : '')" @click="openCase(1)">1</div>
@@ -14,13 +14,13 @@
             <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
             <img src="@/assets/img/case-detail-tri-bg.png" class="case-pic-tri">
         </div>
-        <div class="login-tip flex-row-center"><svg-icon icon-class="warning" style="font-size: 20px; color: #ffd43e"/>登录网站后购买武器箱!</div>
+        <div v-if="!csgoUid" class="login-tip flex-row-center"><svg-icon icon-class="warning" style="font-size: 20px; color: #ffd43e"/>登录网站后购买武器箱!</div>
         <div v-if="csgoUid" class="btn-open">
             <span class="text">打开箱子</span>
-            <span class="price">$1199.90</span>
+            <span class="price">${{ boxinfo.price * this.num }}</span>
         </div>
         <div v-else class="btn-open" style="width: 148px" @click="login">
-            <span class="text" style="text-indent: 70px">登录</span>
+            <span class="text" style="text-indent: 80px; width: 148px">登录</span>
         </div>
         <div class="live-drop">
             <div class="live-title" style="">最<br/>近<br/>箱<br/>子<br/>掉<br/>落</div>
@@ -49,51 +49,27 @@
         </div>
         <div class="box-cont-title">箱子内容</div>
         <div class="box-cont">
-            <div class="drop-list">
-                <div class="img-wrap">
-                    <img src="@/assets/img/milspec.jpg" class="item-bg">
-                    <img class="item-pic" src="@/assets/img/gan.webp" alt="">
-                    <div class="desc">
-                        <div class="desc-bg"></div>
-                        <div class="item-name">
-                            <div class="weapon-type">
-                            R8 左轮手枪 
-                            </div>
-                            <div class="weapon-name">
-                            |  渐变之色 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="drop-list">
-                <div class="img-wrap">
-                    <img src="@/assets/img/milspec.jpg" class="item-bg">
-                    <img class="item-pic" src="@/assets/img/gan.webp" alt="">
-                    <div class="desc">
-                        <div class="desc-bg"></div>
-                        <div class="item-name">
-                            <div class="weapon-type">
-                            R8 左轮手枪 
-                            </div>
-                            <div class="weapon-name">
-                            |  渐变之色 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Drop :is-mask="false" />
+            <Drop :is-mask="false" />
         </div>
     </div>
 </template>
 <script>
 import bg1 from '@/assets/img/bg1.png'
+import Drop from '@/components/drop.vue'
+import {
+    boxInfo
+} from '@/api/box'
 export default {
     name: 'Case',
+    components: {
+        Drop
+    },
     data() {
         return{
             bg1,
-            num: 1
+            num: 1,
+            boxinfo: {}
         }
     },
     computed: {
@@ -102,11 +78,13 @@ export default {
         }
     },
     mounted() {
-        // setTimeout(function() {
-        //     window.opener.location.reload(false)
-        //     window.close()
-        //     window.open(" ","_self").close()
-        // }, 2000)
+        console.log(this.$route)
+        boxInfo({ bid: this.$route.params.id }).then(res => {
+            console.log(res)
+            if (res.errno == 0) {
+                this.boxinfo = res.data.box_info
+            }
+        })
     },
     methods: {
         openCase(num) {
@@ -169,71 +147,6 @@ export default {
     }
     .box-cont{
         overflow: hidden;
-    }
-    .drop-list{
-        width: 166px;
-        height: 166px;
-        margin-right: 10px;
-        margin-bottom: 20px;
-        background-color: #1b1b1b;
-        border-style: solid;
-        border-width: 1px;
-        border-image-source: linear-gradient( 0deg ,#282727,#191919);
-        border-image-slice: 1;
-        position: relative;
-        overflow: hidden;
-        -webkit-transition: all .5s ease;
-        transition: all .5s ease;
-        box-sizing: border-box;
-        float: left;
-    }
-    .drop-list .item-bg{
-        width: 100%;
-    }
-    .drop-list .item-pic{
-        position: absolute;
-        max-width: 90%;
-        max-height: 86px;
-        vertical-align: bottom;
-        opacity: 1;
-        z-index: 2;
-        left: 50%;
-        top: 35%;
-        -webkit-transform: translate(-50%,-50%);
-        transform: translate(-50%,-50%);
-    }
-    .drop-list .desc{
-        position: absolute;
-        width: 100%;
-        height: 43px;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        border: 1px solid #4b69ff;
-        box-sizing: border-box;
-    }
-    .drop-list .desc-bg{
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-color: #4b69ff;
-        opacity: .2;
-    }
-    .drop-list .item-name{
-        font-size: 12px;
-        color: #fff;
-        line-height: 16px;
-        text-align: center;
-        position: absolute;
-        top: 50%;
-        -webkit-transform: translateY(-50%);
-        transform: translateY(-50%);
-        padding: 0 12px;
-    }
-    .weapon-type {
-        color: #5e98d9;
     }
     .live-drop{
         height: 110px;
@@ -454,5 +367,10 @@ export default {
         font-size: 18px;
         text-align: center;
         margin-bottom: 10px;
+    }
+    .box-cont .drop-list{
+        float: left;
+        margin-right: 10px;
+        margin-bottom: 15px;
     }
 </style>
