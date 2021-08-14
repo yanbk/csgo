@@ -47,6 +47,13 @@
                 </div>
             </div>
         </div>
+        <div class="case-title">
+          您的物品
+            <div class="warning flex-row-center">
+                <svg-icon icon-class="warning" style="font-size: 18px; color: #ffd43e"></svg-icon>
+                您的皮肤会保留7天，7天后仍未取回，则会被自动售出兑换为钱包余额。
+            </div>
+        </div>
         <div v-if="isEditName" class="pop">
             <div class="modal-wrap">
                 <div class="close" @click="isEditName = false"><svg-icon icon-class="CloseCircle"/></div>
@@ -308,5 +315,22 @@ export default {
     text-align: center;
     /* background: firebrick; */
     cursor: pointer;
+}
+.case-title{
+    height: 47px;
+    background-color: #161616;
+    text-align: center;
+    font-size: 16px;
+    line-height: 47px;
+    color: #c4c0c0;
+    position: relative;
+    margin-top: 20px;
+}
+.case-title .warning{
+    position: absolute;
+    left: 50%;
+    margin-left: 80px;
+    line-height: 47px;
+    top: 0;
 }
 </style>

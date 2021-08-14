@@ -36,6 +36,9 @@ export const getInfo = (data) => {
     return apiService({
         url: "/user/info",
         method: 'post',
+        xhrFields: {
+            withCredentials: true
+        },
         data
     })
 }

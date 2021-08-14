@@ -1,4 +1,4 @@
-// import Cookie from 'js-cookie'
+import Cookie from 'js-cookie'
 // import { formData } from '@/utils/form'
 import { getInfo, userLogin, userReg } from '@/api/user'
 const user = {
@@ -41,6 +41,8 @@ const user = {
                     if (res.errno == 0) {
                         commit('SET_UID', res.data.uid)
                         commit('SET_TOKEN', res.data.login_jwt)
+                        Cookie.set('uid', res.data.uid)
+                        Cookie.set('login_jwt', res.data.login_jwt)
                     }
                     resolve(res)
                 }).catch(err => {
