@@ -1,5 +1,5 @@
 <template>
-  <div :style="{zIndex:zIndex,height:height,width:width}" class="pan-item">
+  <div class="pan-item">
     <div class="pan-info">
       <div class="pan-info-roles-container">
         <slot />
@@ -16,20 +16,6 @@
 import avatar from '@/assets/myAvatar.png'
 export default {
   name: 'PanThumb',
-  props: {
-    zIndex: {
-      type: Number,
-      default: 1
-    },
-    width: {
-      type: String,
-      default: '150px'
-    },
-    height: {
-      type: String,
-      default: '150px'
-    }
-  },
   data() {
     return {
       avatar: avatar
@@ -40,8 +26,8 @@ export default {
 
 <style scoped>
 .pan-item {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   display: inline-block;
   position: relative;

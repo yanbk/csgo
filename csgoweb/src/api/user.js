@@ -32,13 +32,9 @@ export const editPassword = (data) => {
     })
 }
 
-export const getInfo = (data) => {
+export const getInfo = () => {
     return apiService({
         url: "/user/info",
-        method: 'post',
-        xhrFields: {
-            withCredentials: true
-        },
-        data
+        method: 'get'
     })
 }

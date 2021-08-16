@@ -68,11 +68,11 @@ export default {
         boxList().then(res => {
             console.log(res)
             if (res.errno == 0) {
-                this.$store.commit('admin/showMessage', {
-                    show: true,
-                    type: 'success',
-                    message: '成功'
-                })
+                // this.$store.commit('admin/showMessage', {
+                //     show: true,
+                //     type: 'success',
+                //     message: '成功'
+                // })
                 this.list = res.data.list
             }
         })

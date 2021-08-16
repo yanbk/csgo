@@ -6,6 +6,7 @@ import { formData } from '@/utils/form.js'
 // import { store } from '../store'
 
 // create an axios instance
+axios.defaults.withCredentials = true
 export const apiService = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   timeout: 100000 // request timeout

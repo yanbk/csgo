@@ -38,7 +38,7 @@ export default {
     position: fixed;
     z-index: 999;
     right: -330px;
-    top: 10px;
+    top: 100px;
     transition: right 0.2s .2s;
 }
 .act{

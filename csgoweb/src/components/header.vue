@@ -27,7 +27,7 @@
         <div v-if="!csgoUid" class="login-btn" @click="login">
             登录 / 注册
         </div>
-        <div v-else class="login-btn" @click="test">
+        <div v-else class="login-btn" @click="loginOut">
             {{ userinfo.nickname }}
         </div>
     </div>
@@ -54,6 +54,9 @@ export default {
                 show: true,
                 message: 'hahahhahah'
             })
+        },
+        loginOut() {
+            this.$store.dispatch('user/loginOut')
         }
     },
     created() {

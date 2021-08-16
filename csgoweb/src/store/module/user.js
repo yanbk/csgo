@@ -1,4 +1,4 @@
-import Cookie from 'js-cookie'
+// import Cookie from 'js-cookie'
 // import { formData } from '@/utils/form'
 import { getInfo, userLogin, userReg } from '@/api/user'
 const user = {
@@ -21,14 +21,30 @@ const user = {
         SET_TOKEN: (state, data) => {
             state.csgoToken = data
         },
+        LOGIN_OUT(state) {
+            state.userinfo = {}
+            state.csgoUid = ""
+            state.csgoToken = ""
+            sessionStorage.clear()
+            // router.push({ name: 'login', replace: true })
+            window.location.reload()
+        }
     },
     actions: {
         getInfo({ commit, state }) {
             return new Promise((resolve, reject) => {
                 console.log(state)
-                getInfo({ uid: state.csgoUid, login_jwt: state.csgoToken }).then(res => {
+                getInfo().then(res => {
                     console.log(res)
-                    commit('SET_USERINFO', res.data.user_info)
+                    if (res.errno == 0) {
+                        commit('SET_USERINFO', res.data.user_info)
+                    } else {
+                        this.$store.commit('admin/showMessage', {
+                            show: true,
+                            type: 'error',
+                            message: res.message
+                        })
+                    }
                     resolve(res)
                 }).catch(err => {
                     reject(err)
@@ -41,8 +57,8 @@ const user = {
                     if (res.errno == 0) {
                         commit('SET_UID', res.data.uid)
                         commit('SET_TOKEN', res.data.login_jwt)
-                        Cookie.set('uid', res.data.uid)
-                        Cookie.set('login_jwt', res.data.login_jwt)
+                        // Cookie.set('uid', res.data.uid, {domain: 'csgogo.net'})
+                        // Cookie.set('login_jwt', res.data.login_jwt, {domain: 'csgogo.net'})
                     }
                     resolve(res)
                 }).catch(err => {
@@ -62,6 +78,9 @@ const user = {
                     reject(err)
                 })
             })
+        },
+        loginOut({ commit }) {
+            commit('LOGIN_OUT')
         }
     },
     getters: {

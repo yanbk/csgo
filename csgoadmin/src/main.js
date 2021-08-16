@@ -1,145 +1,51 @@
 import Vue from 'vue'
-import App from './App.vue'
 
-//  按需引入element
-import {
-    Button, 
-    Select, 
-    Dialog, 
-    Form, 
-    Input,
-    FormItem, 
-    Option, 
-    Loading, 
-    Message, 
-    Container, 
-    Card,
-    Dropdown,
-    DropdownMenu,
-    DropdownItem,
-    Row,
-    Col,
-    Menu,
-    Submenu,
-    MenuItem,
-    Aside,
-    Main,
-    Badge,
-    Header,
-    Tabs,
-    Breadcrumb,
-    BreadcrumbItem,
-    Scrollbar,
-    Avatar,
-    TabPane,
-    Divider,
-    Table,
-    TableColumn,
-    Cascader,
-    Checkbox,
-    CheckboxGroup,
-    Pagination,
-    Tag,
-    Drawer,
-    Tree,
-    Popover,
-    Switch,
-    Collapse,
-    CollapseItem,
-    Tooltip,
-    DatePicker,
-    InputNumber,
-    Steps,
-    Upload,
-    Progress,
-    MessageBox
-} from 'element-ui';
+import Cookies from 'js-cookie'
 
-Vue.use(Button);
-Vue.use(Select);
-Vue.use(Dialog);
-Vue.use(Form);
-Vue.use(FormItem);
-Vue.use(Input);
-Vue.use(Option);
-Vue.use(Container);
-Vue.use(Card);
-Vue.use(Dropdown);
-Vue.use(DropdownMenu);
-Vue.use(DropdownItem);
-Vue.use(Row);
-Vue.use(Col);
-Vue.use(Menu);
-Vue.use(Submenu);
-Vue.use(MenuItem);
-Vue.use(Aside);
-Vue.use(Main);
-Vue.use(Badge);
-Vue.use(Header);
-Vue.use(Tabs);
-Vue.use(Breadcrumb);
-Vue.use(BreadcrumbItem);
-Vue.use(Avatar);
-Vue.use(TabPane);
-Vue.use(Divider);
-Vue.use(Table);
-Vue.use(TableColumn);
-Vue.use(Checkbox);
-Vue.use(Cascader);
-Vue.use(Tag);
-Vue.use(Pagination);
-Vue.use(Drawer);
-Vue.use(Tree);
-Vue.use(CheckboxGroup);
-Vue.use(Popover);
-Vue.use(InputNumber);
-Vue.use(Switch);
-Vue.use(Collapse);
-Vue.use(CollapseItem);
-Vue.use(Tooltip);
-Vue.use(DatePicker);
-Vue.use(Steps);
-Vue.use(Upload);
-Vue.use(Progress);
-Vue.use(Scrollbar);
-Vue.use(Loading.directive);
+import 'normalize.css/normalize.css' // a modern alternative to CSS resets
 
-Vue.prototype.$loading = Loading.service;
-Vue.prototype.$message = Message;
-Vue.prototype.$confirm = MessageBox.confirm;
-Dialog.props.closeOnClickModal.default = false
+import Element from 'element-ui'
+import './styles/element-variables.scss'
 
-// 引入封装的router
-import router from '@/router/index'
+import '@/styles/index.scss' // global css
 
-// time line css
-import '../node_modules/timeline-vuejs/dist/timeline-vuejs.css'
-import './icons'
-import '@/permission'
-import { store } from '@/store/index'
+import App from './App'
+import store from './store'
+import router from './router'
+
+import './icons' // icon
+import './permission' // permission control
+import './utils/error-log' // error log
+
+import * as filters from './filters' // global filters
+
+/**
+ * If you don't want to use mock-server
+ * you want to use MockJs for mock api
+ * you can execute: mockXHR()
+ *
+ * Currently MockJs will be used in the production environment,
+ * please remove it before going online ! ! !
+ */
+// if (process.env.NODE_ENV === 'production') {
+//   const { mockXHR } = require('../mock')
+//   mockXHR()
+// }
+
+Vue.use(Element, {
+  size: Cookies.get('size') || 'medium' // set element-ui default size
+})
+
+// register global utility filters
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
+})
+
 Vue.config.productionTip = false
 
-// 路由守卫
-import Bus from '@/utils/bus.js'
-Vue.use(Bus)
-
-// import APlayer from '@moefe/vue-aplayer';
-
-// Vue.use(APlayer, {
-//     defaultCover: 'https://github.com/u3u.png',
-//     productionTip: true,
-// });
-
-
-import { auth } from '@/directive/auth'
-// 按钮权限指令
-auth(Vue)
-
-import uploader from 'vue-simple-uploader'
-Vue.use(uploader)
-
-export default new Vue({
-    render: h => h(App),
-    router,
-    store
-}).$mount('#app')
+new Vue({
+  el: '#app',
+  router,
+  store,
+  render: h => h(App)
+})
