@@ -11,19 +11,20 @@
             <div class="right-wrap">
                 <div class="mail-wrap flex-row-between">
                     <div class="flex-row-center">
-                        <img src="@/assets/img/VIP0.png" class="vip-level">
-                        <div class="name">33bt</div>
+                        <span class="vip-level"><i>VIP</i>{{ userinfo.grade }}</span>
+                        <div class="name">{{ userinfo.nickname }}</div>
                         <svg-icon icon-class="edit" style="font-size: 14px; cursor: pointer" @click="isEditName = true"></svg-icon>
                     </div>
                     <div class="mail flex-row-center">
-                        <svg-icon icon-class="phone" style="font-size: 18px"></svg-icon>
+                        <span>{{ userinfo.phone_number }}</span>
+                        <svg-icon icon-class="phone" style="font-size: 18px; cursor: pointer" @click="bindnumber"></svg-icon>
                         <span>(请绑定手机号)</span>
                     </div>
                 </div>
                 <div class="trade-url-wrap">
                     <div class="input-wrap flex-row-center">
-                        <input type="text">
-                        <div class="btn">保存</div>
+                        <input v-model="userinfo.steam_trade_offer" type="text" placeholder="请输入交易网址">
+                        <div v-if="!userinfo.steam_trade_offer" class="btn" @click="saveSteamTradeOffer">保存</div>
                     </div>
                     <div class="get-url-wrap">
                         <div class="flex-row-start">
@@ -35,15 +36,15 @@
                 </div>
                 <div class="charge-wrap flex-row-between">
                     <div class="money-wrap flex-row-center">
-                        <div class="fund">$0.00</div>
+                        <div class="fund">${{ userinfo.amount }}</div>
                         <router-link to="/charge" class="charge">
                             <span>充值余额</span>
                         </router-link >
                     </div>
-                    <div class="second-pwd-wrap flex-row-center">
+                    <!-- <div class="second-pwd-wrap flex-row-center">
                         <div class="set">设置二级密码</div>
                         <div class="forget">忘记二级密码</div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -54,6 +55,9 @@
                 您的皮肤会保留7天，7天后仍未取回，则会被自动售出兑换为钱包余额。
             </div>
         </div>
+        <div class="box-cont">
+            <Drop v-for="(item, index) in userItems" :key="index" :is-price="true" :is-sell="true" :is-name="true" :dropInfo="item" @sellItem="sellItem" />
+        </div>
         <div v-if="isEditName" class="pop">
             <div class="modal-wrap">
                 <div class="close" @click="isEditName = false"><svg-icon icon-class="CloseCircle"/></div>
@@ -61,30 +65,162 @@
                     <div class="tab">编辑昵称</div>
                 </div>
                 <div class="modal-input-wrap flex-row-center">
-                    <svg-icon icon-class="edit" style="font-size: 16px; color: #676767"></svg-icon><input type="text" placeholder="请输入昵称">
+                    <svg-icon icon-class="edit" style="font-size: 16px; color: #676767"></svg-icon><input v-model="nickname" type="text" placeholder="请输入昵称">
                 </div>
                 <div class="flex-row-start" style="margin-top: 20px">
-                    <span class="confirm">确认</span>
-                    <span class="cancel">取消</span>
+                    <span class="confirm" @click="nicknameChange">确认</span>
+                    <span class="cancel" @click="isEditName = false">取消</span>
                 </div>
             </div>
         </div>
+        <el-dialog
+            :visible.sync="bindDialog"
+            :close-on-click-modal="false"
+        >
+            <div class="input-list flex-row-center">
+                <div class="input-list-l">验证码</div>
+                <input v-model="code" class="input-list-r">
+                <div class="getcode" @click="getSms">{{ countText }}</div>
+            </div>
+            <div class="input-list">
+                <div class="bind-btn" @click="bind">绑定</div>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
+import {
+    getSms,
+    bindmobile,
+    editnickname,
+    userItems,
+    setSteamTradeOffer
+} from '@/api/user'
+import {
+    boxSell
+} from '@/api/box'
+import Drop from '@/components/drop'
 export default {
     name: 'Bag',
+    components: {
+        Drop
+    },
     data() {
         return{
-            isEditName: false
+            isEditName: false,
+            bindDialog: false,
+            countText: '重新发送',
+            isClick: false,
+            countNum: 60,
+            code: '',
+            nickname: '',
+            userItems: []
+        }
+    },
+    computed: {
+        userinfo() {
+            return JSON.parse(JSON.stringify(this.$store.state.user.userinfo))
         }
     },
     mounted() {
-        
+        this.getUserItems()
     },
     methods: {
-        
-    },
+        bindnumber() {
+            this.bindDialog = true
+            this.getSms()
+        },
+        getSms() {
+            if (!this.isClick) {
+                this.isClick = true
+                this.countDown()
+                getSms({ phone_number: this.userinfo.phone_number, type: 'bindmobile' }).then(res => {
+                    console.log(res)
+                })
+            }
+        },
+        countDown() {
+            let _this = this
+            this.countText = this.countNum + 's'
+            let timer = setInterval(function() {
+                _this.countNum -= 1
+                if (_this.countNum < 0) {
+                    clearInterval(timer)
+                    _this.countText = '重新发送'
+                    _this.countNum = 60
+                    _this.isClick = false
+                    return
+                }
+                _this.countText = _this.countNum + 's'
+            }, 1000)
+        },
+        bind() {
+            bindmobile({ phone_number: this.userinfo.phone_number, vercode: this.code }).then(res => {
+                console.log(res)
+            })
+        },
+        nicknameChange() {
+            editnickname({ nickname: this.nickname }).then(res => {
+                // console.log(res)
+                this.isEditName = false
+                if (res.errno == 0) {
+                    this.$store.commit('user/SET_NICKNAME', this.nickname)
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
+        },
+        getUserItems() {
+            userItems().then(res => {
+                console.log(res)
+                if (res.errno == 0) {
+                    this.userItems = res.data
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
+        },
+        sellItem(item) {
+            boxSell({ user_item_id: item.id }).then(res => {
+                console.log(res)
+                if (res.errno == 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '售卖成功'
+                    })
+                    this.getUserItems()
+                    this.$store.dispatch('user/getInfo')
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
+        },
+        saveSteamTradeOffer() {
+            setSteamTradeOffer({ steam_trade_offer: this.userinfo.steam_trade_offer }).then(res => {
+                console.log(res)
+                if (res.errno == 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '保存成功'
+                    })
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
+        }
+    }
 }
 </script>
 <style scoped>
@@ -133,8 +269,11 @@ export default {
     padding: 8px 30px 16px;
 }
 .profile-wrap .mail-wrap .vip-level{
-    width: 84px;
+    padding-right: 10px;
     margin-right: 12px;
+    font-size: 12px;
+    color: #fff;
+    font-weight: bold;
 }
 .profile-wrap .mail-wrap .name{
     font-size: 18px;
@@ -158,7 +297,7 @@ export default {
     flex: 1;
     height: 36px;
     border: 1px solid #ffd43e;
-    border-right: 0;
+    /* border-right: 0; */
     background: #121212;
     text-indent: 15px;
     font-size: 18px;
@@ -332,5 +471,52 @@ export default {
     margin-left: 80px;
     line-height: 47px;
     top: 0;
+}
+.input-list{
+    width: 400px;
+    margin: 0 auto;
+    font-size: 18px;
+    color: #c6c6c6;
+}
+.input-list-l{
+    width: 100px;
+    text-align: right;
+    line-height: 44px;
+    color: #999;
+    padding-right: 15px;
+}
+.input-list-r{
+    height: 42px;
+    background: none;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    text-indent: 20px;
+    font-size: 18px;
+    color: #c6c6c6;
+    outline: medium;
+    border: 1px solid #2b2613;
+}
+.getcode, .bind-btn{
+    width: 128px;
+    height: 44px;
+    line-height: 44px;
+    font-size: 16px;
+    background-color: #2b2613;
+    color: #ffd43e;
+    text-align: center;
+    cursor: pointer;
+}
+.bind-btn{
+    border-radius: 4px;
+    margin: 30px auto 0;
+}
+.box-cont{
+    padding-top: 30px;
+}
+.box-cont .drop-list{
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 15px;
 }
 </style>

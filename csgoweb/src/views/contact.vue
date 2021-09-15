@@ -3,88 +3,54 @@
         <div class="promo-code-wrap flex-row-between">
             <div class="item flex-row-center">
                 <span>推广链接</span>
-                <input type="url" disabled="disabled" class="link-input" value="1234567890">
+                <input v-model="url" type="url" disabled="disabled" class="link-input">
                 <div class="btn-copy">复制</div>
             </div>
             <div class="item flex-row-center">
                 <span>推广码</span>
-                <input type="text" class="code-input" value="123">
-                <div class="btn-change">更换推广码</div>
+                <input v-model="promo_code" type="text" class="code-input">
+                <div class="btn-change" @click="promoCodeChange">更换推广码</div>
             </div>
         </div>
         <div class="partner-info">
             <div class="item flex-col-center">
                 <div class="heading">级别</div>
-                <div class="content">1</div>
-            </div>
-            <div class="item flex-col-center">
-                <div class="heading">被引荐者</div>
-                <div class="content">0</div>
+                <div class="content">{{ userinfo.grade }}</div>
             </div>
             <div class="item flex-col-center">
                 <div class="heading">被引荐者存款</div>
-                <div class="content">$0</div>
+                <div class="content">${{ userinfo.promo_amount }}</div>
             </div>
             <div class="item flex-col-center">
                 <div class="heading">您的百分比</div>
-                <div class="content">4%</div>
+                <div class="content">{{ userinfo.rate }}%</div>
             </div>
             <div class="item flex-col-center">
                 <div class="heading">您的收入</div>
-                <div class="content">$0</div>
+                <div class="content">${{ userinfo.all_wallet }}</div>
             </div>
-            <div class="item flex-col-center">
+            <!-- <div class="item flex-col-center">
                 <div class="heading">被引荐者收入</div>
                 <div class="content">$0.00</div>
-            </div>
+            </div> -->
             <div class="item flex-col-center">
                 <div class="heading">您的会员余额</div>
-                <div class="content">$0.00</div>
+                <div class="content">${{ userinfo.wallet }}</div>
             </div>
         </div>
         <div class="title-wrap">推广级别</div>
         <div class="rank-table">
             <div class="thead flex-row-center">
                 <div class="th">级别</div>
-                <div class="th">下一级需要</div>
-                <div class="th">您的百分比</div>
-                <div class="th">推广玩家收益比</div>
+                <div class="th">本级需要</div>
+                <div class="th">收入百分比</div>
+                <div class="th">邀请玩家收益比</div>
             </div>
             <div class="tbody">
-                <div class="tr flex-row-center">
-                    <div class="td"><img src="@/assets/img/level1.png"></div>
-                    <div class="td">$0</div>
-                    <div class="td">4%</div>
-                    <div class="td">3%</div>
-                </div>
-                <div class="tr flex-row-center">
-                    <div class="td"><img src="@/assets/img/level2.png"></div>
-                    <div class="td">$2000</div>
-                    <div class="td">5%</div>
-                    <div class="td">3%</div>
-                </div>
-                <div class="tr flex-row-center">
-                    <div class="td"><img src="@/assets/img/level3.png"></div>
-                    <div class="td">$5000</div>
-                    <div class="td">6%</div>
-                    <div class="td">3%</div>
-                </div>
-                <div class="tr flex-row-center">
-                    <div class="td"><img src="@/assets/img/level4.png"></div>
-                    <div class="td">$8000</div>
-                    <div class="td">7%</div>
-                    <div class="td">3%</div>
-                </div>
-                <div class="tr flex-row-center">
-                    <div class="td"><img src="@/assets/img/level5.png"></div>
-                    <div class="td">$12000</div>
-                    <div class="td">8%</div>
-                    <div class="td">3%</div>
-                </div>
-                <div class="tr flex-row-center">
-                    <div class="td"><img src="@/assets/img/level6.png"></div>
-                    <div class="td">$15000</div>
-                    <div class="td">10%</div>
+                <div v-for="(item, index) in rebate" :key="index" class="tr flex-row-center">
+                    <div class="td">{{ item.grade }}</div>
+                    <div class="td">${{ item.money_limit }}</div>
+                    <div class="td">{{ (item.rate * 100).toFixed(2) }}%</div>
                     <div class="td">3%</div>
                 </div>
             </div>
@@ -92,22 +58,81 @@
     </div>
 </template>
 <script>
+import {
+    promoCode,
+    rebate
+} from '@/api/user'
 export default {
     name: 'Contact',
     data() {
         return{
-
+            url: '',
+            promo_code: '',
+            rebate: ''
+        }
+    },
+    computed: {
+        userinfo() {
+            return this.$store.state.user.userinfo
+        }
+    },
+    watch: {
+        userinfo: {
+            handler(val){
+                this.promo_code = val.promo_code
+                this.url = window.location.hostname + '/#/' + val.promo_code
+                return val
+            },
+            deep:true
         }
     },
     mounted() {
+        this.promo_code = this.userinfo.promo_code
         // setTimeout(function() {
         //     window.opener.location.reload(false)
         //     window.close()
         //     window.open(" ","_self").close()
         // }, 2000)
+        // console.log(window.location.hostname)
+        this.url = window.location.hostname + '/#/' + (this.userinfo.promo_code ? this.userinfo.promo_code : '')
+        // console.log(this.url)
+
+        rebate().then(res => {
+            if (res.errno == 0) {
+                this.rebate = res.data
+            } else {
+                this.$message({
+                    type: 'error',
+                    message: res.errmsg
+                })
+            }
+        })
     },
     methods: {
-        
+        promoCodeChange() {
+            if (this.promo_code.length >= 2 || this.promo_code <=8) {
+                promoCode({ promo_code: this.promo_code }).then(res => {
+                    console.log(res)
+                    if (res.errno == 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功'
+                        })
+                        this.$store.dispatch('user/getInfo')
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.errmsg
+                        })
+                    }
+                })
+            } else {
+                this.$message({
+                    type: 'error',
+                    message: '推广码长度为2～8位'
+                })
+            }
+        }
     },
 }
 </script>
@@ -230,5 +255,6 @@ export default {
     border-left: 0;
     text-align: center;
     line-height: 34px;
+    cursor: pointer;
 }
 </style>

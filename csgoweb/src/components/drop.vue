@@ -1,28 +1,41 @@
 <template>
     <div :class="'drop-list ' + (isMask ? 'drop-list-hover' : '')">
-        <div v-if="isPrice" class="price">$1234</div>
+        <div v-if="isPrice" class="price">${{ dropInfo.price }}</div>
         <div v-if="isHot" class="hot">热门</div>
         <div class="img-wrap">
             <img src="@/assets/img/milspec.jpg" class="item-bg">
-            <img class="item-pic" src="@/assets/img/gan.webp" alt="">
+            <img class="item-pic" :src="(dropInfo.item_img || dropInfo.img)" alt="">
             <div class="desc">
                 <div class="desc-bg"></div>
-                <div class="item-name">
+                <div v-if="isName" class="item-name">
                     <div class="weapon-type">
-                    R8 左轮手枪 
+                    {{ setName().split('|')[0] }}
                     </div>
                     <div class="weapon-name">
-                    |  渐变之色 
+                    |  {{ setName().split('|')[1] }} 
                     </div>
                 </div>
             </div>
         </div>
         <div v-if="isMask" class="mask">
-            <img class="mask-bg" src="@/assets/img/maskbg.webp" alt="">
-            <div class="mask-wrap">
-                <img src="@/assets/img/face.jpg" class="face-img">
-                <span data-v-654deaf5="">章鱼哥代开的神</span>
+            <div :class="isName ? 'mask-height' : ''">
+                <img class="mask-bg" src="@/assets/img/maskbg.webp" alt="">
+                <div class="mask-wrap">
+                    <img :src="dropInfo.avatar" class="face-img">
+                    <span>{{ dropInfo.nickname }}</span>
+                    <div v-if="!isName" class="item-name">
+                        <div class="weapon-type">
+                        {{ setName().split('|')[0] }}
+                        </div>
+                        <div class="weapon-name">
+                        |  {{ setName().split('|')[1] }} 
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div v-if="isSell" class="sell-mask">
+            <div class="sell" @click="sellItem">卖出</div>
         </div>
     </div>
 </template>
@@ -30,6 +43,10 @@
 <script>
 export default {
     props: {
+        dropInfo: {
+            type: Object,
+            default: function() {}
+        },
         isMask: {
             type: Boolean,
             default: false
@@ -41,6 +58,14 @@ export default {
         isHot: {
             type: Boolean,
             default: false
+        },
+        isName: {
+            type: Boolean,
+            default: false
+        },
+        isSell: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -48,8 +73,22 @@ export default {
 
         }
     },
-    components: {
-
+    mounted() {
+        // console.log(this.dropInfo)
+    },
+    methods: {
+        sellItem() {
+            this.$emit('sellItem', this.dropInfo)
+        },
+        setName() {
+            let name = ''
+            if (this.dropInfo.name) {
+                name = this.dropInfo.name
+            } else if (this.dropInfo.item_name) {
+                name = this.dropInfo.item_name
+            }
+            return name
+        }
     }
 }
 </script>
@@ -139,6 +178,11 @@ export default {
         transform: translateY(-50%);
         padding: 0 12px;
     }
+    .mask-wrap .item-name{
+        position: static;
+        top: 0;
+        transform: translateY(0);
+    }
     .weapon-type {
         color: #5e98d9;
     }
@@ -155,29 +199,28 @@ export default {
         transition: all .3s ease;
         z-index: 9;
     }
+    .mask-height{
+        height: 123px;
+        position: relative;
+    }
     .face-img{
         width: 40px;
         height: 40px;
         border-radius: 50%;
         margin-bottom: 15px;
     }
+    .mask-wrap .face-img{
+        margin-bottom: 0;
+    }
     .mask-wrap{
         position: absolute;
         width: 100%;
+        height: 124px;
         left: 0;
-        top: 45%;
-        -webkit-transform: translateY(-50%);
-        transform: translateY(-50%);
-        color: #dbdee4;
-        display: -webkit-box;
-        display: -ms-flexbox;
+        top: 0;
         display: flex;
-        -webkit-box-orient: vertical;
-        -webkit-box-direction: normal;
-        -ms-flex-direction: column;
         flex-direction: column;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
+        justify-content: center;
         align-items: center;
     }
     .mask-wrap span{
@@ -193,6 +236,9 @@ export default {
     .mask-bg{
         width: 100%;
         opacity: 0.3;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
     }
     .drop-list-hover:hover .mask{
         opacity: 1;
@@ -202,5 +248,30 @@ export default {
     }
     .drop-list-hover:hover .item-pic{
         opacity: 0;
+    }
+    .sell-mask{
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 20;
+        opacity: 0;
+        transition: all 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+    .sell-mask:hover{
+        opacity: 1;
+    }
+    .sell{
+        font-size: 16px;
+        padding: 8px 20px;
+        color: #fff;
+        background: #333;
+        border-radius: 3px;
     }
 </style>

@@ -1,5 +1,6 @@
 // import Cookie from 'js-cookie'
 // import { formData } from '@/utils/form'
+import { Message } from 'element-ui'
 import { getInfo, userLogin, userReg } from '@/api/user'
 const user = {
     namespaced: true,
@@ -28,6 +29,12 @@ const user = {
             sessionStorage.clear()
             // router.push({ name: 'login', replace: true })
             window.location.reload()
+        },
+        SET_NICKNAME: (state, data) => {
+            state.userinfo.nickname = data
+        },
+        SET_PROMOCODE: (state, data) => {
+            state.userinfo.promo_code = data
         }
     },
     actions: {
@@ -39,10 +46,9 @@ const user = {
                     if (res.errno == 0) {
                         commit('SET_USERINFO', res.data.user_info)
                     } else {
-                        this.$store.commit('admin/showMessage', {
-                            show: true,
+                        Message({
                             type: 'error',
-                            message: res.message
+                            message: res.errmsg
                         })
                     }
                     resolve(res)

@@ -9,8 +9,8 @@
                         <svg-icon icon-class="shijian" style="font-size: 16px"></svg-icon><span>进行中...</span>
                     </div>
                     <div class="room-endtime">
-                        <div>开奖时间：2021-09-01 </div>
-                        <div class="time">18:00:00</div>
+                        <div>开奖时间：{{ rollInfo.lottery_time.split(' ')[0] }} </div>
+                        <div class="time">{{ rollInfo.lottery_time.split(' ')[1] }}</div>
                     </div>
                 </div>
                 <div class="flex-row-between" style="padding: 0 15px">
@@ -19,27 +19,27 @@
                             <img src="@/assets/img/169f5426c4d388dcc6a069c08b64bdf368cf2b07.webp">
                         </div>
                         <div class="info-wrap">
-                            <div class="room-title">SKSKINS 8月高级福利</div>
-                            <div class="room-desc">SKSKINS 高级福利活动开启时间：8月2日，活动期间每增加$50，增加一个参与序数，记得充值后点击更新按钮</div>
+                            <div class="room-title">{{ rollInfo.rollname }}</div>
+                            <div class="room-desc">{{ rollInfo.description }}</div>
                         </div>
                     </div>
                     <div class="right-wrap">
                         <div class="flex-row-start" style="width: 250px">
                             <div class="item-desc flex-row-center">
                                 <div class="head">人数: </div>
-                                <div>62</div>
+                                <div>{{ rollInfo.member_number }}</div>
                             </div>
                             <div class="item-desc flex-row-center">
                                 <div class="head">件数: </div>
-                                <div>32</div>
+                                <div>{{ rollInfo.itemnum }}</div>
                             </div>
                             <div class="item-desc flex-row-center">
                                 <div class="head">价值: </div>
-                                <div class="val">$6552.98</div>
+                                <div class="val">${{ rollInfo.itemamount }}</div>
                             </div>
                         </div>
                         <div class="join-btn flex-row-center">
-                            <span class="text">立即加入</span>
+                            <span class="text" @click="joinBtn">立即加入</span>
                             <span class="price">参与序数: 0</span>
                         </div>
                     </div>
@@ -51,15 +51,28 @@
             <span>参与序数：在ROLL活动进行期间内，每达成一次充值额度，增加一次参与序数，增加ROLL中概率</span>
         </div>
         <div class="title-wrap">活动奖池</div>
-        <div class="roll-items-wrap">
-            <Drop :is-mask="false" />
-            <Drop :is-mask="false" />
-            <Drop :is-mask="false" />
+        <div v-if="itemList && itemList.length > 0" class="roll-items-wrap">
+            <Drop  v-for="(item, index) in itemList" :key="index" :dropInfo="item" :is-name="true" />
         </div>
+        <el-dialog
+            title="请输入密码"
+            :visible.sync="dialog"
+            width="300px"
+        >
+            <div class="pwdbox">
+                <span>密码：</span>
+                <input v-model="pwd" type="password">
+            </div>
+            <div class="surebtn" @click="join">确认</div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+import {
+    rollInfo,
+    join
+} from '@/api/roll'
 import Drop from '@/components/drop.vue'
 export default {
     name: 'RollDetail',
@@ -68,7 +81,58 @@ export default {
     },
     data() {
         return {
-
+            dialog: false,
+            rid: this.$route.params.id,
+            rollInfo: {
+                lottery_time: ''
+            },
+            itemList: [],
+            pwd: ''
+        }
+    },
+    mounted() {
+        this.getRollInfo()
+    },
+    methods: {
+        joinBtn() {
+            if (this.rollInfo.is_passwd == 1) {
+                this.dialog = true
+            } else {
+                this.join()
+            }
+        },
+        join() {
+            join({
+                rid: this.rid,
+                pwd: this.pwd
+            }).then(res => {
+                if (res.errno == 0) {
+                    this.dialog = false
+                    this.$message({
+                        type: 'success',
+                        message: '加入成功'
+                    })
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
+        },
+        getRollInfo() {
+            rollInfo({ rid: this.rid}).then(res => {
+                console.log(res)
+                if (res.errno == 0) {
+                    this.rollInfo = res.data.roll_info
+                    this.itemList = res.data.item_list
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
         }
     }
 }
@@ -160,7 +224,8 @@ export default {
     font-size: 18px;
     color: #191919;
     line-height: 34px;
-    text-indent: 54px;
+    text-indent: 45px;
+    cursor: pointer;
 }
 .join-btn .price{
     display: block;
@@ -193,5 +258,32 @@ export default {
     float: left;
     margin-right: 10px;
     margin-bottom: 15px;
+}
+.pwdbox{
+    display: flex;
+    padding-left: 30px;
+    font-size: 18px;
+    line-height: 40px;
+}
+.pwdbox input{
+    width: 250px;
+    height: 40px;
+    border: 1px solid #999;
+    outline: medium;
+    border-radius: 3px;
+    text-indent: 15px;
+}
+.surebtn{
+    width: 100px;
+    height: 44px;
+    background-color: #252218;
+    font-size: 20px;
+    color: #ffd43e;
+    border: 1px solid #ffd23c;
+    text-align: center;
+    line-height: 44px;
+    margin-left: 150px;
+    margin-top: 30px;
+    cursor: pointer;
 }
 </style>

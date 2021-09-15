@@ -1,6 +1,6 @@
 <template>
     <div style="background: #1a1a1a">
-        <div style="width: 100%; overflow: hidden; display: flex; padding: 20px 0"><RollList v-for="item in 3" :key="item" /></div>
+        <div style="width: 100%; overflow: hidden; display: flex; padding: 20px 0"><RollList v-for="(item, index) in roomList" :key="index" :roomInfo="item"/></div>
         <div class="hotbox">
             <div class="hot-title">
                 <img :src="hotTitle" alt="">
@@ -53,12 +53,16 @@ import RollList from '@/components/rollList.vue'
 import {
     boxList
 } from '@/api/box'
+import {
+    rollList
+} from '@/api/roll'
 export default {
     data() {
         return {
             hotTitle,
             saleTitle,
-            list: {}
+            list: {},
+            roomList: []
         }
     },
     components: {
@@ -68,12 +72,23 @@ export default {
         boxList().then(res => {
             console.log(res)
             if (res.errno == 0) {
-                // this.$store.commit('admin/showMessage', {
-                //     show: true,
-                //     type: 'success',
-                //     message: '成功'
-                // })
                 this.list = res.data.list
+            } else {
+                this.$message({
+                    type: 'error',
+                    message: res.errmsg
+                })
+            }
+        })
+        rollList({ num: 3 }).then(res => {
+            console.log(res)
+            if (res.errno == 0) {
+                this.roomList = res.data.list
+            } else {
+                this.$message({
+                    type: 'error',
+                    message: res.errmsg
+                })
             }
         })
     },
@@ -91,7 +106,7 @@ export default {
     background: #1a1a1a;
 }
 .hot-title{
-    height: 89px;
+    height: 70px;
     position: relative;
     z-index: 5;
 }
@@ -106,7 +121,7 @@ export default {
     font-size: 18px;
     color: #fff;
     left: 0px;
-    top: 22px;
+    top: 14px;
 }
 .box{
     background: #1b1512;

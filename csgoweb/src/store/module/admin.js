@@ -3,18 +3,14 @@ const user = {
     namespaced: true,
     state: {
         isLogin: false,
-        msgObj: {
-            show: false,
-            type: 'info',
-            message: ''
-        }
+        isActive: false
     },
     mutations: {
         loginShow(state, data) {
             state.isLogin = data
         },
-        showMessage(state, data) {
-            state.msgObj = { ...state.msgObj, ...data }
+        activeShow(state, data) {
+            state.isActive = data
         }
     },
     actions: {

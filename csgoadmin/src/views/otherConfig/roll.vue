@@ -1,20 +1,17 @@
 <template>
-  <div class="">
+  <div class="container">
     <div class="btns">
-      <el-button type="primary" size="small" @click="add">添加箱子</el-button>
+      <el-button type="primary" size="small" @click="add">添加roll房</el-button>
     </div>
     <el-table
       :data="tableData"
       height="calc(100vh - 220px)"
     >
-      <el-table-column label="箱子名称" prop="boxname"></el-table-column>
-      <el-table-column label="封面道具名" prop="facename"></el-table-column>
-      <el-table-column label="箱子分类" prop="boxtypename"></el-table-column>
-      <el-table-column label="箱子售价" prop="boxprice"></el-table-column>
-      <el-table-column label="出金间隔" prop="timecell"></el-table-column>
-      <el-table-column label="上架状态" prop="stat">
-        <template slot-scope="{ row }">{{ getLabel(stat, row.stat) }}</template>
-      </el-table-column>
+      <el-table-column label="roll房名称" prop="rollname"></el-table-column>
+      <el-table-column label="roll房简介" prop="description"></el-table-column>
+      <el-table-column label="roll房密码" prop="rollpasswd"></el-table-column>
+      <el-table-column label="roll房图片" prop="rollimg"></el-table-column>
+      <el-table-column label="进入充值门槛" prop="in_limit"></el-table-column>
       <el-table-column label="操作" prop="" width="160">
         <template slot-scope="{ row }">
           <el-button type="primary" size="small" @click="edit(row)">编辑</el-button>
@@ -37,70 +34,37 @@
       width="1000px"
     >
       <el-dialog
-        width="650px"
+        width="700px"
         title="道具配置"
         :visible.sync="itemDialog"
         append-to-body
       >
-        <el-dialog
-          width="500px"
-          title="道具配置"
-          :visible.sync="itemInnerDialog"
-          append-to-body
-        >
-          <div class="box-item-wrap" style="background: none">
-            <img :src="itemConfigData.imageUrl" alt="">
-            <div class="item-list-desc">
-              <p>{{ itemConfigData.itemName }}</p>
-              <p>类型：{{ itemConfigData.typeName }}</p>
-              <p>稀有度：{{ itemConfigData.qualityName }}</p>
-            </div>
-            <div class="item-list-price">
-              <p>在售数量 {{ itemConfigData.quantity }}</p>
-              <p>最低售价 ${{ itemConfigData.price }}</p>
-            </div>
-          </div>
-          <el-form :model="itemConfig" :rules="rules" label-width="120px">
-            <el-form-item label="显示概率" prop="displayrate">
-              <el-input v-model="itemConfig.displayrate" size="small"></el-input>
-            </el-form-item>
-            <el-form-item label="普通掉率" prop="normalrate">
-              <el-input v-model="itemConfig.normalrate" size="small"></el-input>
-            </el-form-item>
-            <el-form-item label="高级掉率" prop="advancedrate">
-              <el-input v-model="itemConfig.advancedrate" size="small"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" size="small" @click="addItemConfig">添加道具</el-button>
-            </el-form-item>
-          </el-form>
-        </el-dialog>
         <el-form :model="itemForm" inline label-width="100px">
           <el-form-item label="道具类型">
-            <el-select v-model="itemForm.type" size="small" clearable>
+            <el-select v-model="itemForm.type" clearable size="small">
               <el-option v-for="item in searchtype.WPType" :key="item.id" :label="item.name" :value="item.searchKey"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="品质">
-            <el-select v-model="itemForm.rarity" size="small" clearable>
+            <el-select v-model="itemForm.rarity" clearable size="small">
               <el-option v-for="item in searchtype.Rarity" :key="item.id" :label="item.name" :value="item.searchKey"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="质量">
-            <el-select v-model="itemForm.quality" size="small" clearable>
+            <el-select v-model="itemForm.quality" clearable size="small">
               <el-option v-for="item in searchtype.Quality" :key="item.id" :label="item.name" :value="item.searchKey"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="外观">
-            <el-select v-model="itemForm.exterior" size="small" clearable>
+            <el-select v-model="itemForm.exterior" clearable size="small">
               <el-option v-for="item in searchtype.Exterior" :key="item.id" :label="item.name" :value="item.searchKey"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="收藏品">
             <el-cascader
               v-model="itemSetValue"
-              size="small"
               clearable
+              size="small"
               :options="itemSet"
               :props="{ label: 'name', value: 'searchKey' }"
               @change="itemSetChange"
@@ -131,7 +95,7 @@
               <p>在售数量 {{ item.quantity }}</p>
               <p>最低售价 ${{ item.price }}</p>
             </div>
-            <el-button type="primary" size="small" @click="configBtn(item)">配置</el-button>
+            <el-button type="primary" size="small" @click="saveConfigBtn(item)">配置</el-button>
           </div>
           <div style="text-align: center; margin-top: 15px">
             <el-pagination
@@ -144,12 +108,28 @@
           </div>
         </div>
       </el-dialog>
+      <el-dialog
+        width="600px"
+        title="添加金币"
+        :visible.sync="itemInnerDialog"
+        append-to-body
+      >
+        <el-form :model="goldConfig" :rules="rules" label-width="120px">
+          <el-form-item label="金币数量" prop="gold">
+            <el-input v-model="goldConfig.gold" size="small"></el-input>
+            （金币在roll房道具列表中，固定排在列表最后，按从大到小排列）
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" size="small" @click="addgoldConfig">保存道具</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
       <el-form ref="form" :model="form" :rules="rules" inline label-width="120px" class="demo-ruleForm">
         <el-form-item
-          label="箱子名称"
-          prop="boxname"
+          label="roll房名称"
+          prop="rollname"
         >
-          <el-input v-model="form.boxname" autocomplete="off" />
+          <el-input v-model="form.rollname" size="small" autocomplete="off" />
         </el-form-item>
         <!-- <el-form-item
           label="封面道具名"
@@ -181,49 +161,94 @@
           </el-upload>
         </el-form-item> -->
         <el-form-item
-          label="箱子分类"
-          prop="boxtypeid"
+          label="roll房简介"
+          prop="description"
         >
-          <el-select v-model.number="form.boxtypeid">
-            <el-option v-for="item in boxtype" :key="item.id" :label="item.boxtypename" :value="item.id"></el-option>
-          </el-select>
+          <el-input v-model="form.description" size="small" autocomplete="off" />
         </el-form-item>
         <el-form-item
-          label="箱子售价"
-          prop="boxprice"
+          label="roll房密码"
+          prop="rollpasswd"
         >
-          <el-input v-model="form.boxprice" autocomplete="off" />
+          <el-input v-model="form.rollpasswd" size="small" autocomplete="off" />
         </el-form-item>
         <el-form-item
-          label="出金间隔"
-          prop="timecell"
+          label="roll房图片"
+          prop="rollimg"
         >
-          <el-input v-model.number="form.timecell" autocomplete="off" />
+          <el-input v-model="form.rollimg" size="small" autocomplete="off" />
         </el-form-item>
         <el-form-item
-          label="上架状态"
-          prop="stat"
+          label="进入充值门槛"
+          prop="in_limit"
         >
-          <el-select v-model="form.stat">
-            <el-option v-for="item in stat" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          <el-input v-model="form.in_limit" size="small" autocomplete="off" />
+        </el-form-item>
+        <el-form-item
+          label="人数上限"
+          prop="member_limit"
+        >
+          <el-input v-model="form.member_limit" size="small" autocomplete="off" />
+        </el-form-item>
+        <el-form-item
+          label="roll房开启时间"
+          prop="open_time"
+        >
+          <el-date-picker
+            v-model="form.open_time"
+            type="datetime"
+            size="small"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            placeholder="选择日期时间"
+            style="width: 180px"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item
+          label="roll房开奖时间"
+          prop="lottery_time"
+        >
+          <el-date-picker
+            v-model="form.lottery_time"
+            type="datetime"
+            size="small"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            placeholder="选择日期时间"
+            style="width: 180px"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item
+          label="指定中奖用户id"
+          prop="special_uid"
+        >
+          <el-input v-model="form.special_uid" autocomplete="off" />
+        </el-form-item>
+        <el-form-item
+          label="roll房状态"
+          prop="status"
+        >
+          <el-select v-model="form.status" size="small" style="width: 180px">
+            <el-option v-for="item in rollStatus" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item
           v-if="!isAdd"
-          label="正常掉落配置"
+          label="roll房道具配置"
           prop=""
         >
           <div style="width: 800px; display: flex; flex-wrap: wrap">
             <div v-for="(item, index) in boxitemData.items" :key="index" class="box-item-list">
-              <img :src="item.imageUrl" alt="">
+              <img :src="item.stdmode == 1 ? item.imageUrl : 'http://adm.csgogo.net/static/img/jb.png'" alt="">
               <div class="close-config"><el-button type="danger" icon="el-icon-close" circle style="width: 20px; height: 20px" @click="delItemConfig(item)"></el-button></div>
-              <p>${{ item.price }}</p>
-              <p>{{ item.displayrate }}%</p>
-              <p>普 {{ item.normalrate }}%</p>
-              <p>高 {{ item.advancedrate }}%</p>
+              <p v-if="item.stdmode == 1">${{ item.price }}</p>
+              <p v-else style="color: #ff3341">{{ item.gold }}</p>
             </div>
             <div class="addbtn" @click="additem">
               <i class="el-icon-plus"></i>
+            </div>
+            <div class="addbtn" @click="addgold">
+              <el-button icon="el-icon-plus" circle></el-button>
             </div>
           </div>
         </el-form-item>
@@ -237,20 +262,21 @@
 
 <script>
 import {
-  boxtype,
-  boxconfig,
-  boxconfigadd,
-  boxconfigdel,
-  boxconfigmod,
-  boxitemlist,
-  boxitemsearch,
-  searchtype,
-  boxitemset,
-  boxitemdel
+  searchtype
 } from '@/api/box'
 import {
+  rollconfig,
+  rollconfigadd,
+  rollconfigdel,
+  rollitemlist,
+  rollconfigmod,
+  boxitemsearch,
+  rollitemset,
+  rollitemdel
+} from '@/api/roll'
+import {
   getLabel,
-  stat,
+  rollStatus,
   formData
 } from '@/utils/config'
 import { _URL } from '@/utils/config'
@@ -267,13 +293,19 @@ export default {
       itemInnerDialog: false,
       isAdd: false,
       form: {
-        boxname: '',
-        facename: '',
-        boxtypeid: '',
-        boxprice: '',
-        timecell: '',
-        stat: ''
+        rollname: '',
+        description: '',
+        rollpasswd: '',
+        rollimg: '',
+        in_limit: '',
+        member_limit: '',
+        open_time: '',
+        lottery_time: '',
+        special_uid: '',
+        status: ''
       },
+      open_time: '',
+      lottery_time: '',
       itemForm: {
         exterior: '',
         quality: '',
@@ -284,40 +316,26 @@ export default {
         minPrice: '',
         keyword: ''
       },
-      itemConfig: {
-        displayrate: '',
-        normalrate: '',
-        advancedrate: ''
+      goldConfig: {
+        gold: ''
       },
       rules: {},
       fileList: [],
       url: _URL,
       getLabel,
-      stat,
-      boxtype: [],
+      rollStatus,
       boxitemData: {},
-      itemTotal: 0,
-      itemPage: 1,
       searchtype: {},
       itemSet: [],
       itemSetValue: [],
       searchList: [],
-      itemConfigData: {},
-      boxItemTotal: 0
+      selectItem: {},
+      boxItemTotal: 0,
+      itemPage: 1
     }
   },
   mounted() {
     this.getList()
-    boxtype().then(res => {
-      if (res.code === 0) {
-        this.boxtype = res.data.items
-      } else {
-        this.$message({
-          type: 'error',
-          message: res.message
-        })
-      }
-    })
     searchtype().then(res => {
       if (res.code === 0) {
         this.searchtype = res.data
@@ -335,7 +353,7 @@ export default {
   },
   methods: {
     getList() {
-      boxconfig().then(res => {
+      rollconfig().then(res => {
         console.log(res)
         if (res.code === 0) {
           this.tableData = res.data.items
@@ -352,12 +370,16 @@ export default {
       this.dialog = true
       this.isAdd = true
       this.form = {
-        boxname: '',
-        facename: '',
-        boxtypeid: '',
-        boxprice: '',
-        timecell: '',
-        stat: ''
+        rollname: '',
+        description: '',
+        rollpasswd: '',
+        rollimg: '',
+        in_limit: '',
+        member_limit: '',
+        open_time: '',
+        lottery_time: '',
+        special_uid: '',
+        status: ''
       }
       if (this.$refs.form) {
         this.$refs.form.resetFields()
@@ -370,7 +392,7 @@ export default {
       this.getItemConfig()
     },
     getItemConfig() {
-      boxitemlist(this.form.id).then(res => {
+      rollitemlist(this.form.id).then(res => {
         if (res.code === 0) {
           this.boxitemData = res.data
         } else {
@@ -382,14 +404,9 @@ export default {
       })
     },
     submitform() {
-      const data = new FormData()
-      for (var key in this.form) {
-        data.append(key, this.form[key])
-      }
-      console.log(this.form)
       this.dialog = false
       if (this.isAdd) {
-        boxconfigadd(data).then(res => {
+        rollconfigadd(formData(this.form)).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.getList()
@@ -401,7 +418,7 @@ export default {
           }
         })
       } else {
-        boxconfigmod(data).then(res => {
+        rollconfigmod(formData(this.form)).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.getList()
@@ -427,7 +444,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        boxconfigdel(row.id).then(res => {
+        rollconfigdel(row.id).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.$message({
@@ -447,6 +464,9 @@ export default {
     additem() {
       this.itemDialog = true
     },
+    addgold() {
+      this.itemInnerDialog = true
+    },
     boxitemsearch() {
       boxitemsearch(formData({ ...this.itemForm, page: this.itemPage })).then(res => {
         if (res.code === 0) {
@@ -460,19 +480,32 @@ export default {
         }
       })
     },
-    configBtn(item) {
-      this.itemInnerDialog = true
-      this.itemConfigData = item
-    },
     currentChange(e) {
       this.itemPage = e
       this.boxitemsearch()
     },
+    saveConfigBtn(item) {
+      this.itemDialog = false
+      rollitemset(formData({ stdmode: 1, rollroomid: this.form.id, ...item })).then(res => {
+        if (res.code === 0) {
+          this.$message({
+            type: 'success',
+            message: '添加成功'
+          })
+          this.getItemConfig()
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.message
+          })
+        }
+      })
+    },
     itemSetChange(e) {
       this.itemForm.itemSet = e[1] ? e[1] : ''
     },
-    addItemConfig() {
-      boxitemset(formData({ boxid: this.form.id, ...this.itemConfigData, ...this.itemConfig })).then(res => {
+    addgoldConfig() {
+      rollitemset(formData({ stdmode: 2, rollroomid: this.form.id, ...this.goldConfig })).then(res => {
         if (res.code === 0) {
           this.itemInnerDialog = false
           this.$message({
@@ -494,7 +527,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        boxitemdel(formData({ boxid: this.form.id, itemid: item.id })).then(res => {
+        rollitemdel(formData({ rollroomid: this.form.id, itemid: item.id })).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.$message({
@@ -592,5 +625,9 @@ export default {
     line-height: 20px;
     padding: 0;
     margin: 0;
+  }
+  .container .addbtn /deep/ .el-button--medium.is-circle{
+    border: 0;
+    background: yellow;
   }
 </style>

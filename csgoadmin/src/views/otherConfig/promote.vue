@@ -7,11 +7,10 @@
       :data="tableData"
       height="calc(100vh - 220px)"
     >
-      <el-table-column label="分类名称" prop="boxtypename"></el-table-column>
-      <el-table-column label="别名" prop="aliasname"></el-table-column>
-      <el-table-column label="类型描述" prop="boxtypedes"></el-table-column>
-      <el-table-column label="箱子类型底图" prop="boxtypepic"></el-table-column>
-      <el-table-column label="当前包含箱子数量" prop="boxnumber"></el-table-column>
+      <el-table-column label="级别" prop="grade"></el-table-column>
+      <el-table-column label="流水下限" prop="money_limit"></el-table-column>
+      <el-table-column label="流水上限" prop="money_upper"></el-table-column>
+      <el-table-column label="返利比" prop="rate"></el-table-column>
       <el-table-column label="排序" prop="level"></el-table-column>
       <el-table-column label="操作" prop="" width="160">
         <template slot-scope="{ row }">
@@ -20,80 +19,42 @@
         </template>
       </el-table-column>
     </el-table>
-    <div style="border-top: 1px solid #999; padding-top: 10px; text-align: center">
-      <el-pagination
-        background
-        layout="total, sizes, prev, pager, next"
-        :total="total"
-      >
-      </el-pagination>
-    </div>
     <el-dialog
-      title="增加"
+      :title="isAdd ? '增加' : '修改'"
       :visible.sync="dialog"
       :close-on-click-modal="false"
       width="600"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="demo-ruleForm">
         <el-form-item
-          label="分类名称"
-          prop="boxtypename"
+          label="返利级别"
+          prop="grade"
         >
-          <el-input v-model="form.boxtypename" autocomplete="off" />
+          <el-input v-model="form.grade" size="small" autocomplete="off" />
         </el-form-item>
         <el-form-item
-          label="别名"
-          prop="aliasname"
+          label="流水下限"
+          prop="money_limit"
         >
-          <el-input v-model="form.aliasname" autocomplete="off" />
+          <el-input v-model="form.money_limit" size="small" autocomplete="off" />
         </el-form-item>
         <el-form-item
-          label="类型描述"
-          prop="boxtypedes"
+          label="流水上限"
+          prop="money_upper"
         >
-          <el-input v-model="form.boxtypedes" type="textarea" autocomplete="off" />
+          <el-input v-model="form.money_upper" type="textarea" size="small" autocomplete="off" />
         </el-form-item>
         <el-form-item
-          v-if="!isAdd"
-          label="分类底图图"
-          prop="boxtypepic"
+          label="返利比"
+          prop="rate"
         >
-          <el-input v-model="form.boxtypepic" disabled autocomplete="off" />
+          <el-input v-model="form.rate" size="small" autocomplete="off" />
         </el-form-item>
         <el-form-item
           label="排序优先级"
           prop="level"
         >
-          <el-input v-model="form.level" autocomplete="off" />
-        </el-form-item>
-        <el-form-item
-          label="上传底图"
-          prop="file"
-        >
-          <el-upload
-            action=""
-            list-type="picture-card"
-            :limit="1"
-            :auto-upload="false"
-            :file-list="fileList"
-            :on-change="fileChange"
-          >
-            <i slot="default" class="el-icon-plus"></i>
-            <div slot="file" slot-scope="{file}">
-              <img
-                class="el-upload-list__item-thumbnail"
-                :src="file.url"
-              >
-              <span class="el-upload-list__item-actions">
-                <span
-                  class="el-upload-list__item-delete"
-                  @click="handleRemove(file)"
-                >
-                  <i class="el-icon-delete"></i>
-                </span>
-              </span>
-            </div>
-          </el-upload>
+          <el-input v-model="form.level" size="small" autocomplete="off" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitform">提交</el-button>
@@ -105,14 +66,14 @@
 
 <script>
 import {
-  boxtype,
-  boxtypeadd,
-  boxtypedel,
-  boxtypemod
-} from '@/api/box'
-import { _URL } from '@/utils/config'
+  rebate,
+  rebateadd,
+  rebatemod,
+  rebatedel
+} from '@/api/roll'
+import { formData } from '@/utils/config'
 export default {
-  name: 'CaseCategory',
+  name: 'Promote',
   data() {
     return {
       tableData: [],
@@ -122,16 +83,13 @@ export default {
       dialog: false,
       isAdd: false,
       form: {
-        boxtypename: '',
-        aliasname: '',
-        boxtypedes: '',
-        level: '',
-        boxtypepic: '',
-        file: ''
+        grade: '',
+        money_limit: '',
+        money_upper: '',
+        rate: '',
+        level: ''
       },
-      rules: {},
-      fileList: [],
-      url: _URL
+      rules: {}
     }
   },
   mounted() {
@@ -139,7 +97,7 @@ export default {
   },
   methods: {
     getList() {
-      boxtype().then(res => {
+      rebate().then(res => {
         console.log(res)
         if (res.code === 0) {
           this.tableData = res.data.items
@@ -156,11 +114,11 @@ export default {
       this.dialog = true
       this.isAdd = true
       this.form = {
-        boxtypename: '',
-        aliasname: '',
-        boxtypedes: '',
+        grade: '',
+        money_limit: '',
+        money_upper: '',
         level: '',
-        boxtypepic: '',
+        rate: '',
         file: ''
       }
       if (this.$refs.form) {
@@ -171,16 +129,10 @@ export default {
       this.isAdd = false
       this.dialog = true
       this.form = JSON.parse(JSON.stringify(row))
-      this.fileList = [{ url: this.url + this.form.boxtypepic }]
     },
     submitform() {
-      const data = new FormData()
-      for (var key in this.form) {
-        data.append(key, this.form[key])
-      }
-      console.log(this.form)
       if (this.isAdd) {
-        boxtypeadd(data).then(res => {
+        rebateadd(formData(this.form)).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.dialog = false
@@ -193,7 +145,7 @@ export default {
           }
         })
       } else {
-        boxtypemod(data).then(res => {
+        rebatemod(formData(this.form)).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.dialog = false
@@ -207,20 +159,13 @@ export default {
         })
       }
     },
-    handleRemove(file) {
-      this.fileList = []
-    },
-    fileChange(file) {
-      console.log(file)
-      this.form.file = file.raw
-    },
     del(row) {
       this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        boxtypedel(row.id).then(res => {
+        rebatedel(row.id).then(res => {
           console.log(res)
           if (res.code === 0) {
             this.$message({

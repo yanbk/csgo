@@ -2,29 +2,34 @@
     <div class="charge-container">
         <div class="pay-wrap flex-row-center">
             <div v-for="(item, index) in products" :key="index" :class="'item flex-row-center ' + (productId == item.product_id ? 'selected' : '')" @click="select(item)">
-                <div class="price">${{ item.price }}</div>
+                <div class="price">${{ item.gold }}</div>
                 <div class="bonus">
                     <div class="text">额外赠送</div>
-                    <span>$0.15</span>
+                    <span>${{ item.give_gold }}</span>
                 </div>
             </div>
         </div>
         <div class="input-wrap flex-row-start">
-            <input type="text" placeholder="输入推广代码" value="" class="use-now-input">
+            <input v-model="userinfo.from_promo_code" type="text" :disabled="userinfo.from_promo_code ? true : false" placeholder="输入推广代码" value="" class="use-now-input">
             <div class="flex-row-between" style="flex: 1">
-                <div class="bonus">+0优惠</div>
-                <div class="btn-use-now">使用</div>
+                <div class="bonus">+{{ this.product.gold ? this.product.gold * 0.03 : 0 }}优惠</div>
+                <div class="btn-use-now" :style="userinfo.from_promo_code ? 'display: none' : ''" @click="bindPromoCode">使用</div>
             </div>
         </div>
         <div class="btn-wrap" @click="getOrder">
             <span class="text">立即充值</span>
         </div>
         <div v-if="isPay" class="pop">
-            <div class="charge-wrap flex-row-between">
+            <div class="charge-wrap">
                 <div class="close" @click="close"><svg-icon icon-class="CloseCircle"></svg-icon></div>
-                <div v-for="(item, index) in order.pay_list" :key="index">
-                    <img class="pay-title" :src="item.logo" alt="">
-                    <img :src="item.pay_url" alt="">
+                <div v-if="!order.orderid" class="flex-row-center" style="height: 200px">
+                    <svg-icon icon-class="loading" style="font-size: 50px"></svg-icon>
+                </div>
+                <div v-else class="flex-row-between">
+                    <div v-for="(item, index) in order.pay_list" :key="index">
+                        <img class="pay-title" :src="item.id == 59 ? '@/assets/img/icon_zfb.jpg' : '@/assets/img/icon_wx.jpg'" alt="">
+                        <img :src="item.pay_url" alt="">
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,8 +39,12 @@
 <script>
 import {
     getConfig,
-    getOrder
+    getOrder,
+    payFinished
 } from '@/api/pay'
+import {
+    bindPromoCode
+} from '@/api/user'
 export default {
     name: 'Charge',
     data() {
@@ -44,7 +53,14 @@ export default {
             product: {},
             productId: '',
             order: {},
-            isPay: false
+            isPay: false,
+            timer: null,
+            from_promo_code: ''
+        }
+    },
+    computed: {
+        userinfo() {
+            return this.$store.state.user.userinfo
         }
     },
     mounted() {
@@ -57,7 +73,7 @@ export default {
                 if (res.errno == 0) {
                     this.products = res.data
                 } else {
-
+                    console.log(res.message)
                 }
             })
         },
@@ -72,12 +88,39 @@ export default {
                 if (res.errno == 0) {
                     this.order = res.data
                 } else {
-
+                    console.log(res.message)
                 }
             })
+
+            this.timer = setInterval(()  => {
+                if (this.order.orderid) {
+                    payFinished({ orderid: this.order.orderid }).then(res => {
+                        console.log(res)
+                    })
+                }
+            }, 2000)
         },
         close() {
             this.isPay = false
+            clearInterval(this.timer)
+            this.timer = null
+        },
+        bindPromoCode() {
+            bindPromoCode({ from_promo_code: this.from_promo_code }).then(res => {
+                console.log(res)
+                if (res.errno == 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '使用成功'
+                    })
+                    this.$store.dispatch('user/getInfo')
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
         }
     },
 }
@@ -154,6 +197,7 @@ export default {
     outline: medium;
 }
 .input-wrap .bonus{
+    width: 70px;
     font-size: 12px;
     color: #d62f27;
     margin-right: 10px;
@@ -164,6 +208,7 @@ export default {
     width: 54px;
     height: 40px;
     background-color: #cd2d26;
+    cursor: pointer;
 }
 .btn-wrap{
     width: 186px;
@@ -178,6 +223,7 @@ export default {
 }
 .charge-wrap{
     width: 500px;
+    min-height: 300px;
     position: absolute;
     padding: 30px;
     border-radius: 5px;

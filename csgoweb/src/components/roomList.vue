@@ -4,39 +4,37 @@
             <div class="flex-row-between">
                 <div class="flex-row-center">
                     <div class="img-wrap">
-                        <img src="@/assets/img/169f5426c4d388dcc6a069c08b64bdf368cf2b07.webp">
+                        <img :src="roomData.avatar">
                     </div>
                     <div class="info-wrap">
-                        <div class="room-desc">SKSKINS 高级福利活动开启时间：8月2日，活动期间每增加$50，增加一个参与序数，记得充值后点击更新按钮</div>
+                        <div class="room-desc">{{ roomData.description }}</div>
                     </div>
                 </div>
                 <div class="room-endtime">
-                    <div>开奖时间：2021-09-01 </div>
-                    <div class="time">18:00:00</div>
+                    <div>开奖时间：{{ roomData.lottery_time.split(' ')[0] }} </div>
+                    <div class="time">{{ roomData.lottery_time.split(' ')[1] }}</div>
                 </div>
             </div>
             <div class="item-wrap flex-row-between">
                 <div class="flex-row-center">
                     <div class="item-other">
                         <div class="head">人数: </div>
-                        <div>62</div>
+                        <div>{{ roomData.member_number }}</div>
                     </div>
                     <div class="item-other">
                         <div class="head">件数: </div>
-                        <div>32</div>
+                        <div>{{ roomData.itemnum }}</div>
                     </div>
                     <div class="item-other">
                         <div class="head">价值: </div>
-                        <div class="val">$6554.54</div>
+                        <div class="val">${{ roomData.itemamount }}</div>
                     </div>
                 </div>
-                <router-link to="/roll/detail/41" class="join-btn">立即加入</router-link>
+                <router-link :to="'/roll/detail/' + roomData.id" class="join-btn" @click="join">立即加入</router-link>
             </div>
         </div>
         <div class="bot-wrap">
-            <Drop :is-mask="false" />
-            <Drop :is-mask="false" />
-            <Drop :is-mask="false" />
+            <Drop v-for="(item, index) in roomData.item_list" :key="index" :dropInfo="item" :is-name="true"/>
         </div>
     </div>
 </template>
@@ -48,8 +46,24 @@ export default {
     components: {
         Drop
     },
+    props: {
+        roomData: {
+            type: Object,
+            default: () => {
+                return {}
+            }
+        }
+    },
     data() {
         return {
+
+        }
+    },
+    mounted() {
+        console.log(this.roomData)
+    },
+    methods: {
+        join() {
 
         }
     }
@@ -58,7 +72,7 @@ export default {
 
 <style scoped>
 .room-container{
-    width: 444px;
+    width: 445px;
 }
 .top-wrap{
     height: 106px;
@@ -123,10 +137,19 @@ export default {
     background: url(~@/assets/img/btn-146-red.png) no-repeat 50%;
     border: none;
     text-align: center;
-    padding-left: 40px;
+    padding-left: 20px;
     margin-right: 6px;
 }
 .bot-wrap{
-    display: flex;
+    width: 100%;
+    overflow: hidden;
+    background: #250303;
+}
+.bot-wrap .drop-list{
+    width: 143px;
+    float: left;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 </style>

@@ -27,8 +27,15 @@
         <div v-if="!csgoUid" class="login-btn" @click="login">
             登录 / 注册
         </div>
-        <div v-else class="login-btn" @click="loginOut">
-            {{ userinfo.nickname }}
+        <div v-else class="login-btn">
+            <el-dropdown trgger="click" @command="dropCommand">
+                <span class="el-dropdown-link">
+                    {{ userinfo.nickname }}<i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="loginout">退出登录</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
         </div>
     </div>
 </template>
@@ -48,15 +55,13 @@ export default {
         login() {
             this.$store.commit('admin/loginShow', true)
         },
-        test() {
-            this.$store.commit('admin/showMessage', {
-                type: 'error',
-                show: true,
-                message: 'hahahhahah'
-            })
-        },
         loginOut() {
             this.$store.dispatch('user/loginOut')
+        },
+        dropCommand(e) {
+            if (e == 'loginout') {
+                this.loginOut()
+            }
         }
     },
     created() {
@@ -99,10 +104,10 @@ export default {
         float: right;
         cursor: pointer;
     }
-    .login-btn:hover{
+    /* .login-btn:hover{
         background: #999;
         color: #fff;
-    }
+    } */
     .icon{
         height: 40px;
     }

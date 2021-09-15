@@ -96,15 +96,24 @@ export default {
         userOpt() {
             if (this.navIndex == 1) {
                 if (this.mobile == '') {
-                    alert('请输入手机号')
+                    this.$message({
+                        type: 'error',
+                        message: '请输入手机号'
+                    })
                     return
                 }
                 if (this.password == '') {
-                    alert('请输入密码')
+                    this.$message({
+                        type: 'error',
+                        message: '请输入密码'
+                    })
                     return
                 }
                 if (!this.isDot) {
-                    alert('请确认已满18周岁')
+                    this.$message({
+                        type: 'error',
+                        message: '请确认已满18周岁'
+                    })
                     return
                 }
                 let data = {
@@ -116,28 +125,46 @@ export default {
                         this.$store.commit('admin/loginShow', false)
                         this.$store.dispatch('user/getInfo')
                     } else {
-                        alert(res.errmsg)
+                        this.$message({
+                            type: 'error',
+                            message: res.errmsg
+                        })
                     }
                 })
             } else if (this.navIndex == 2) {
                 if (this.mobile == '') {
-                    alert('请输入手机号')
+                    this.$message({
+                        type: 'error',
+                        message: '请输入手机号'
+                    })
                     return
                 }
                 if (this.code == '') {
-                    alert('请输入验证码')
+                    this.$message({
+                        type: 'error',
+                        message: '请输入验证码'
+                    })
                     return
                 }
                 if (this.password == '') {
-                    alert('请输入密码')
+                    this.$message({
+                        type: 'error',
+                        message: '请输入密码'
+                    })
                     return
                 }
                 if (this.password != this.password1) {
-                    alert('两次密码不一致')
+                    this.$message({
+                        type: 'error',
+                        message: '两次密码不一致'
+                    })
                     return
                 }
                 if (!this.isDot) {
-                    alert('请确认已满18周岁')
+                    this.$message({
+                        type: 'error',
+                        message: '请确认已满18周岁'
+                    })
                     return
                 }
                 let data = {
@@ -150,28 +177,46 @@ export default {
                         this.$store.commit('admin/loginShow', false)
                         this.$store.dispatch('user/getInfo')
                     } else {
-                        alert(res.errmsg)
+                        this.$message({
+                            type: 'error',
+                            message: res.errmsg
+                        })
                     }
                 })
             } else {
                 if (this.mobile == '') {
-                    alert('请输入手机号')
+                    this.$message({
+                        type: 'error',
+                        message: '请输入手机号'
+                    })
                     return
                 }
                 if (this.code == '') {
-                    alert('请输入验证码')
+                    this.$message({
+                        type: 'error',
+                        message: '请输入验证码'
+                    })
                     return
                 }
                 if (this.password == '') {
-                    alert('请输入密码')
+                    this.$message({
+                        type: 'error',
+                        message: '请输入密码'
+                    })
                     return
                 }
                 if (this.password != this.password1) {
-                    alert('两次密码不一致')
+                    this.$message({
+                        type: 'error',
+                        message: '两次密码不一致'
+                    })
                     return
                 }
                 if (!this.isDot) {
-                    alert('请确认已满18周岁')
+                    this.$message({
+                        type: 'error',
+                        message: '请确认已满18周岁'
+                    })
                     return
                 }
                 editPassword({
@@ -184,7 +229,10 @@ export default {
                         alert('修改成功')
                         this.$store.commit('admin/loginShow', false)
                     } else {
-                        alert(res.errmsg)
+                        this.$message({
+                            type: 'error',
+                            message: res.errmsg
+                        })
                     }
                 })
             }

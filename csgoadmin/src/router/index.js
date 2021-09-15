@@ -162,98 +162,6 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/external',
-    component: Layout,
-    alwaysShow: true,
-    meta: {
-      title: '外部系统',
-      icon: 'folder',
-      roles: [
-        'admin', 'external_auth_list', 'external_auth_add', 'external_auth_info', 'external_auth_edit', 'external_auth_del',
-        'external_auth_dev_list',
-        'external_auth_groups_list', 'external_auth_groups_add', 'external_auth_groups_info', 'external_auth_groups_edit', 'external_auth_groups_del',
-        'external_auth_user_list',
-        'external_auth_permission_list', 'external_auth_permission_add', 'external_auth_permission_edit', 'external_auth_permission_info', 'external_auth_permission_del'
-      ]
-    },
-    children: [
-      {
-        path: 'external_list',
-        component: () => import('@/views/external/external_list'),
-        name: 'ExternalList',
-        meta: {
-          title: '外部项目管理',
-          icon: 'table',
-          roles: ['admin', 'external_auth_list', 'external_auth_add', 'external_auth_info', 'external_auth_edit', 'external_auth_del']
-        }
-      },
-      {
-        path: 'external_project',
-        component: () => import('@/views/external/external_project'),
-        name: 'ExternalProject',
-        meta: {
-          title: '外部项目权限管理',
-          icon: 'table',
-          roles: ['admin', 'external_auth_dev_list']
-        }
-      },
-      {
-        path: 'external_group',
-        component: () => import('@/views/external/external_group'),
-        name: 'ExternalGroup1',
-        hidden: true,
-        meta: {
-          title: '操作员外部项目',
-          icon: 'table',
-          roles: ['admin', 'external_auth_groups_list', 'external_auth_groups_add', 'external_auth_groups_info', 'external_auth_groups_edit', 'external_auth_groups_del']
-        }
-      },
-      {
-        path: 'external_user',
-        component: () => import('@/views/external/external_user'),
-        name: 'ExternalUser',
-        meta: {
-          title: '外部项目菜单管理',
-          icon: 'table',
-          roles: ['admin', 'external_auth_user_list']
-        }
-      },
-      {
-        path: 'external_permission',
-        component: () => import('@/views/external/external_permission'),
-        name: 'ExternalPermission',
-        hidden: true,
-        meta: {
-          title: '外部项目',
-          icon: 'table',
-          roles: ['admin', 'external_auth_permission_list', 'external_auth_permission_add', 'external_auth_permission_edit', 'external_auth_permission_info', 'external_auth_permission_del']
-        }
-      },
-      {
-        path: 'extral',
-        component: () => import('@/views/external/extral_list'),
-        name: 'Extral',
-        hidden: true,
-        meta: {
-          title: '附加数据',
-          icon: 'table',
-          roles: ['admin', 'external_auth_param_list', 'external_auth_param_add', 'external_auth_param_edit', 'external_auth_param_del']
-        }
-      },
-      {
-        path: 'extral_class',
-        component: () => import('@/views/external/extral_class'),
-        name: 'ExtralClass',
-        hidden: true,
-        meta: {
-          title: '附加数据',
-          icon: 'table',
-          roles: ['admin', 'external_auth_param_class_list', 'external_auth_param_class_add', 'external_auth_param_class_edit', 'external_auth_param_class_del']
-        }
-      }
-    ]
-  },
-  {
     path: '/openCase',
     component: Layout,
     alwaysShow: true,
@@ -279,6 +187,58 @@ export const asyncRoutes = [
         component: () => import('@/views/openCase/caseConfig.vue'),
         meta: {
           title: '箱子配置',
+          icon: 'list',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'paramConfig',
+        name: 'ParamConfig',
+        component: () => import('@/views/openCase/paramConfig.vue'),
+        meta: {
+          title: '控制参数配置',
+          icon: 'list',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/otherConfig',
+    component: Layout,
+    alwaysShow: true,
+    meta: {
+      title: '其他配置',
+      icon: 'folder',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'roll',
+        name: 'Roll',
+        component: () => import('@/views/otherConfig/roll.vue'),
+        meta: {
+          title: 'roll房管理',
+          icon: 'list',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'promote',
+        name: 'Promote',
+        component: () => import('@/views/otherConfig/promote.vue'),
+        meta: {
+          title: '推广返利',
+          icon: 'list',
+          roles: ['admin']
+        }
+      },
+      {
+        path: 'adminSet',
+        name: 'AdminSet',
+        component: () => import('@/views/openCase/paramConfig.vue'),
+        meta: {
+          title: '管理员设置',
           icon: 'list',
           roles: ['admin']
         }

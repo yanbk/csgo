@@ -55,7 +55,7 @@ export function delUser(data) {
 
 export function updateOwnUser(data) {
   return request({
-    url: 'user/update_own_user/' + data.id,
+    url: '/user/update_own_user/' + data.id,
     method: 'post',
     data
   })
@@ -70,7 +70,7 @@ export function ldapSettingInfo() {
 
 export function ldapSettingEdit(data) {
   return request({
-    url: 'user/ldap_setting_edit',
+    url: '/user/ldap_setting_edit',
     method: 'post',
     data
   })
@@ -78,7 +78,7 @@ export function ldapSettingEdit(data) {
 
 export function ldapTestConn(data) {
   return request({
-    url: 'user/ldap_test_conn',
+    url: '/user/ldap_test_conn',
     method: 'post',
     data
   })
@@ -86,7 +86,7 @@ export function ldapTestConn(data) {
 
 export function ldapsTestConn(data) {
   return request({
-    url: 'user/ldaps_test_conn',
+    url: '/user/ldaps_test_conn',
     method: 'post',
     data
   })
@@ -94,7 +94,7 @@ export function ldapsTestConn(data) {
 
 export function ldapTestLogin(data) {
   return request({
-    url: 'user/ldap_test_login',
+    url: '/user/ldap_test_login',
     method: 'post',
     data
   })
@@ -102,21 +102,21 @@ export function ldapTestLogin(data) {
 
 export function ldapImportUser() {
   return request({
-    url: 'user/ldap_import_user',
+    url: '/user/ldap_import_user',
     method: 'get'
   })
 }
 
 export function ldapOrganization() {
   return request({
-    url: 'user/ldap_organization',
+    url: '/user/ldap_organization',
     method: 'get'
   })
 }
 
 export function ldapUserEditStatusToActiv(data) {
   return request({
-    url: 'user/ldap_user_edit_status_to_activ',
+    url: '/user/ldap_user_edit_status_to_activ',
     method: 'post',
     data
   })
@@ -124,7 +124,7 @@ export function ldapUserEditStatusToActiv(data) {
 
 export function ldapUserEditStatusToDie(data) {
   return request({
-    url: 'user/ldap_user_edit_status_to_die',
+    url: '/user/ldap_user_edit_status_to_die',
     method: 'post',
     data
   })
@@ -132,7 +132,7 @@ export function ldapUserEditStatusToDie(data) {
 
 export function ldapSafeGroupUser(data) {
   return request({
-    url: 'user/ldap_safe_group_user',
+    url: '/user/ldap_safe_group_user',
     method: 'post',
     data
   })
@@ -140,7 +140,7 @@ export function ldapSafeGroupUser(data) {
 
 export function ldapAddUserToSafeGroup(data) {
   return request({
-    url: 'user/ldap_add_user_to_safe_group',
+    url: '/user/ldap_add_user_to_safe_group',
     method: 'post',
     data
   })
@@ -148,7 +148,7 @@ export function ldapAddUserToSafeGroup(data) {
 
 export function ldapRemoveUserToSafeGroup(data) {
   return request({
-    url: 'user/ldap_remove_user_to_safe_group',
+    url: '/user/ldap_remove_user_to_safe_group',
     method: 'post',
     data
   })
@@ -156,7 +156,7 @@ export function ldapRemoveUserToSafeGroup(data) {
 
 export function ldapGroupAdd(data) {
   return request({
-    url: 'user/ldap_group_add',
+    url: '/user/ldap_group_add',
     method: 'post',
     data
   })
@@ -164,7 +164,7 @@ export function ldapGroupAdd(data) {
 
 export function ldapUserAdd(data) {
   return request({
-    url: 'user/ldap_user_add',
+    url: '/user/ldap_user_add',
     method: 'post',
     data
   })
@@ -172,7 +172,7 @@ export function ldapUserAdd(data) {
 
 export function ldapUserInfo(data) {
   return request({
-    url: 'user/ldap_user_info',
+    url: '/user/ldap_user_info',
     method: 'post',
     data
   })
@@ -180,7 +180,7 @@ export function ldapUserInfo(data) {
 
 export function ldapUserEditInfo(data) {
   return request({
-    url: 'user/ldap_user_edit_info',
+    url: '/user/ldap_user_edit_info',
     method: 'post',
     data
   })
@@ -188,14 +188,14 @@ export function ldapUserEditInfo(data) {
 
 export function ldapGroup() {
   return request({
-    url: 'user/ldap_group',
+    url: '/user/ldap_group',
     method: 'get'
   })
 }
 
 export function ldapChangeUserGroup(data) {
   return request({
-    url: 'user/ldap_change_user_group',
+    url: '/user/ldap_change_user_group',
     method: 'post',
     data
   })

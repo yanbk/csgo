@@ -4,8 +4,8 @@
     <LiveDrop />
     <router-view></router-view>
     <Footer></Footer>
-    <Message :msgObj="msgObj" />
     <Login v-if="isLogin"/>
+    <Active v-if="isActive" />
   </div>
 </template>
 
@@ -14,7 +14,7 @@ import NavHeader from './components/header.vue'
 import LiveDrop from '@/components/liveDrop.vue'
 import Login from '@/components/login'
 import Footer from '@/components/footer.vue'
-import Message from '@/components/message.vue'
+import Active from '@/components/active.vue'
 export default {
   name: 'App',
   components: {
@@ -22,7 +22,7 @@ export default {
     LiveDrop,
     Login,
     Footer,
-    Message
+    Active
   },
   data() {
     return {
@@ -32,10 +32,13 @@ export default {
     isLogin() {
       return this.$store.state.admin.isLogin
     },
-    msgObj() {
-      return this.$store.state.admin.msgObj
+    isActive() {
+      return this.$store.state.admin.isActive
     }
-  }
+  },
+  mounted() {
+    
+  },
 }
 </script>
 

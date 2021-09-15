@@ -1,23 +1,23 @@
 <template>
-    <div style="background: #1a1a1a; overflow: hidden">
+    <div class="caseContainer" style="background: #1a1a1a; overflow: hidden">
         <div class="warning-word"><svg-icon icon-class="warning" style="font-size: 20px; color: #ffd43e"/>本网站所有游戏均为为增加趣味性所设的休闲娱乐活动，请勿沉迷，理性消费；禁止利用互动活动进行赌博/欺诈/作弊/刷积分等违法违规行为。若有发现，我们将取消您的活动参与资格。</div>
         <div class="case-title">
             <span>{{ boxinfo.title }}</span>
             <div class="flex-row-center">
                 <span class="open-num-title">选择开箱数: </span>
-                <div :class="'item ' + (num == 1 ? 'selected' : '')" @click="openCase(1)">1</div>
-                <div :class="'item ' + (num == 5 ? 'selected' : '')" @click="openCase(5)">5</div>
-                <div :class="'item ' + (num == 10 ? 'selected' : '')" @click="openCase(10)">10</div>
+                <div :class="'item ' + (num == 1 ? 'selected' : '')" @click="openNumCase(1)">1</div>
+                <div :class="'item ' + (num == 5 ? 'selected' : '')" @click="openNumCase(5)">5</div>
+                <div :class="'item ' + (num == 10 ? 'selected' : '')" @click="openNumCase(10)">10</div>
             </div>
         </div>
         <div class="case-open-wrap">
             <img src="@/assets/img/600fd8a39b76c.webp" class="case-pic">
             <img src="@/assets/img/case-detail-tri-bg.png" class="case-pic-tri">
         </div>
-        <div v-if="!csgoUid" class="login-tip flex-row-center"><svg-icon icon-class="warning" style="font-size: 20px; color: #ffd43e"/>登录网站后购买武器箱!</div>
-        <div v-if="csgoUid" class="btn-open">
-            <span class="text">打开箱子</span>
-            <span class="price">${{ boxinfo.price * this.num }}</span>
+        <div v-if="!userinfo.uid" class="login-tip flex-row-center"><svg-icon icon-class="warning" style="font-size: 20px; color: #ffd43e"/>登录网站后购买武器箱!</div>
+        <div v-if="userinfo.uid" class="btn-open">
+            <span class="text" @click="openCase">打开箱子</span>
+            <span class="price">${{ (boxinfo.price * this.num).toFixed(2) }}</span>
         </div>
         <div v-else class="btn-open" style="width: 148px" @click="login">
             <span class="text" style="text-indent: 80px; width: 148px">登录</span>
@@ -25,7 +25,8 @@
         <div class="live-drop">
             <div class="live-title" style="">最<br/>近<br/>箱<br/>子<br/>掉<br/>落</div>
             <div class="drop-wrap">
-                <div class="item covert">
+                <Drop v-for="(item, index) in dropList" :key="index" :dropInfo="item" :is-mask="true" :is-name="false" />
+                <!-- <div class="item covert">
                     <div class="img-wrap">
                         <img src="@/assets/img/hand.png" class="drop-pic">
                         <img src="@/assets/img/covert.png" class="case-pic">
@@ -44,21 +45,44 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
         <div class="box-cont-title">箱子内容</div>
         <div class="box-cont">
-            <Drop :is-mask="false" />
-            <Drop :is-mask="false" />
+            <Drop v-for="(item, index) in boxinfo.item_list" :key="index" :dropInfo="item" :is-name="true" />
         </div>
+        <el-dialog
+            :visible.sync="runningDialog"
+            width="1000px"
+        >
+            <div class="running-list flex-row-center">
+                <div v-for="(item, index) in boxRunning.prize" :key="item.user_item_id" class="list">
+                    <div class="item">
+                        <img src="@/assets/img/gan.webp" alt="">
+                        <div class="running-desc">
+                            <span>{{ item.price }}</span>
+                            <p>{{ item.name }}</p>
+                        </div>
+                    </div>
+                    <div class="sell-btn flex-row-center" :style="item.disabled ? 'opacity: 0.7' : ''" @click="sellItem(item.user_item_id, index, item.disabled)">出售<svg-icon icon-class="gold" style="font-size: 12px"></svg-icon>{{ item.price }}</div>
+                </div>
+            </div>
+            <div class="flex-row-center" style="margin: 40px">
+                <div class="again" @click="again">再试一次</div>
+                <div class="sell-all flex-row-center" :style="totalBtn ? 'opacity: 0.7' : ''" @click="sellAll">出售<svg-icon icon-class="gold" style="font-size: 12px"></svg-icon>{{ totalPrice }}</div>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
 import bg1 from '@/assets/img/bg1.png'
 import Drop from '@/components/drop.vue'
 import {
-    boxInfo
+    boxInfo,
+    boxRunning,
+    dropList,
+    boxSell
 } from '@/api/box'
 export default {
     name: 'Case',
@@ -69,29 +93,133 @@ export default {
         return{
             bg1,
             num: 1,
-            boxinfo: {}
+            boxinfo: {},
+            dropList: [],
+            boxRunning: {},
+            runningDialog: false,
+            totalPrice: 0,
+            totalBtn: false
         }
     },
     computed: {
-        csgoUid() {
-            return this.$store.state.user.csgoUid
+        userinfo() {
+            return this.$store.state.user.userinfo
         }
     },
     mounted() {
-        console.log(this.$route)
+        // console.log(this.$route)
         boxInfo({ bid: this.$route.params.id }).then(res => {
             console.log(res)
             if (res.errno == 0) {
-                this.boxinfo = res.data.box_info
+                this.boxinfo = res.data
+            } else {
+                this.$message({
+                    type: 'error',
+                    message: res.errmsg
+                })
+            }
+        })
+        dropList({ game_type: 101 }).then(res => {
+            console.log(res)
+            if (res.errno == 0) {
+                this.dropList = res.data
+            } else {
+                this.$message({
+                    type: 'error',
+                    message: res.errmsg
+                })
             }
         })
     },
     methods: {
-        openCase(num) {
+        openNumCase(num) {
             this.num = num
         },
         login() {
             this.$store.commit('admin/loginShow', true)
+        },
+        openCase() {
+            console.log(this.userinfo)
+            if (this.userinfo.amount && this.userinfo.amount < this.boxinfo.price * this.num) {
+                this.$router.push({
+                    path: '/charge'
+                })
+            } else {
+                if (this.userinfo.steamid) {
+                    this.runningDialog = true
+                    this.again()
+                } else {
+                    window.open('//passport.csgogo.net/steam/login?uid=' + this.userinfo.uid, '', 'width=600,height=600')
+                }
+            }
+        },
+        again() {
+            boxRunning({ bid: this.boxinfo.id, num: this.num }).then(res => {
+                console.log(res)
+                if (res.errno == 0) {
+                    this.totalBtn = false
+                    this.boxRunning = res.data
+                    this.totalPrice = 0
+                    res.data.prize.map(item => {
+                        this.totalPrice += item.price
+                    })
+                    this.totalPrice = this.totalPrice.toFixed(2)
+                    this.$store.dispatch('user/getInfo')
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
+        },
+        sellAll() {
+            if (this.totalBtn) return
+            this.totalBtn = true
+            boxSell({ cost_orderid: this.boxRunning.cost_orderid }).then(res => {
+                console.log(res)
+                if (res.errno == 0) {
+                    for (let i = 0; i < this.boxRunning.prize.length; i++) {
+                        this.$set(this.boxRunning.prize[i], 'disabled', true)
+                    }
+                    this.$message({
+                        type: 'success',
+                        message: '售卖成功'
+                    })
+                    this.$store.dispatch('user/getInfo')
+                } else {
+                    this.totalBtn = false
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
+        },
+        sellItem(id, index, disabled) {
+            console.log(id)
+            if (disabled) {
+                return
+            }
+            this.totalBtn = true
+            this.$set(this.boxRunning.prize[index], 'disabled', true)
+            boxSell({ user_item_id: id }).then(res => {
+                console.log(res)
+                if (res.errno == 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '售卖成功'
+                    })
+                    this.$store.dispatch('user/getInfo')
+                } else {
+                    this.totalBtn = false
+                    this.$set(this.boxRunning.prize[index], 'disabled', false)
+                    this.$message({
+                        type: 'error',
+                        message: res.errmsg
+                    })
+                }
+            })
         }
     },
 }
@@ -149,16 +277,17 @@ export default {
         overflow: hidden;
     }
     .live-drop{
-        height: 110px;
+        height: 126px;
         overflow: hidden;
         margin-top: 30px;
+        display: flex;
     }
     .live-title{
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 38px;
-        height: 110px;
+        padding: 0 6px;
+        height: 126px;
         background-color: #ffd43e;
         font-size: 14px;
         color: #131313;
@@ -167,8 +296,9 @@ export default {
         float: left;
     }
     .drop-wrap{
-        float: left;
         margin-left: 1px;
+        display: flex;
+        flex: 1;
     }
     .drop-wrap .item{
         width: 162px;
@@ -349,7 +479,7 @@ export default {
         font-size: 20px;
         line-height: 42px;
         color: #171717;
-        text-indent: 58px;
+        text-indent: 52px;
         cursor: pointer;
     }
     .btn-open  .price{
@@ -372,5 +502,78 @@ export default {
         float: left;
         margin-right: 10px;
         margin-bottom: 15px;
+    }
+    /* .running-list{
+        display: inline-block;
+        margin: 0 auto;
+        flex-wrap: nowrap;
+    } */
+    .running-list .list{
+        width: 180px;
+        height: 240px;
+    }
+    .running-list .list .item{
+        width: 100%;
+        height: 180px;
+        background: #323852;
+        position: relative;
+    }
+    .running-list .list img{
+        position: absolute;
+        width: 80%;
+        left: 50%;
+        top: 50%;
+        transform: translateX(-50%) translateY(-50%);
+    }
+    .sell-btn{
+        width: 130px;
+        height: 40px;
+        background: #171717;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #fff;
+        cursor: pointer;
+        margin: 20px auto 0;
+    }
+    .again{
+        width: 150px;
+        height: 44px;
+        font-size: 20px;
+        color: #fff;
+        background: #13864d;
+        text-align: center;
+        line-height: 44px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .sell-all{
+        width: 150px;
+        height: 44px;
+        margin-left: 50px;
+        background: #171717;
+        color: #fff;
+        font-size: 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .caseContainer /deep/ .el-dialog{
+        /* background: rgba(0,0,0,.9); */
+    }
+    .running-desc{
+        width: 100%;
+        position: absolute;
+        bottom: 10px;
+        font-size: 12px;
+        color: #2de288;
+        font-weight: bold;
+        text-align: center;
+    }
+    .running-desc p{
+        font-weight: normal;
+        padding: 0 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #aaa;
     }
 </style>

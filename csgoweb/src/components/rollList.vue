@@ -8,31 +8,31 @@
                 <div class="countdown-wrap">
                     <div class="outer-wrap">
                         <div class="countdown">
-                            <span>0</span>
-                            <span>0</span>
+                            <span>{{ time.day[0] }}</span>
+                            <span>{{ time.day[1] }}</span>
                         </div>
                         <div class="time">天</div>
                     </div>
                     <div class="outer-wrap">
                         <div class="countdown">
-                            <span>0</span>
-                            <span>4</span>
+                            <span>{{ time.hour[0] }}</span>
+                            <span>{{ time.hour[1] }}</span>
                         </div>
                         <div class="time">时</div>
                     </div>
                     <div class="outer-wrap">
                         <div class="countdown">
-                            <span>5</span>
-                            <span>5</span>
+                            <span>{{ time.min[0] }}</span>
+                            <span>{{ time.min[1] }}</span>
                         </div>
                         <div class="time">分</div>
                     </div>
                 </div>
                 <div class="room-wrap">
-                    <div class="room-title">SKSKINS 7月高级福利</div>
+                    <div class="room-title">{{ roomInfo.rollname }}</div>
                     <div class="flex-row-start">
-                        <img src="@/assets/img/169f5426c4d388dcc6a069c08b64bdf368cf2b07.webp" class="room-pic">
-                        <div class="room-desc">SKSKINS 高级福利活动开启时间：7月2日，活动期间每增加$50，增加一个参与序数，记得充值后点击更新按钮</div>
+                        <img :src="roomInfo.avatar" class="room-pic">
+                        <div class="room-desc">{{ roomInfo.description }}</div>
                     </div>
                 </div>
             </div>
@@ -43,11 +43,53 @@
 import rollBgRed from '@/assets/img/index-roll-bg-red.png'
 export default {
     name: 'RollList',
-    data() {
-        return {
-            rollBgRed
+    props: {
+        roomInfo: {
+            type: Object,
+            default: () => {}
         }
     },
+    data() {
+        return {
+            rollBgRed,
+            time: {
+                day: '',
+                hour: '',
+                min: ''
+            },
+            timer: null
+        }
+    },
+    mounted() {
+        this.showTime()
+        if (this.roomInfo.remain_time && this.roomInfo.remain_time >= 0) {
+            this.timer = setInterval(() => {
+                this.showTime()
+                this.roomInfo.remain_time -= 60
+                if (this.roomInfo.remain_time < 0) {
+                    clearInterval(this.timer)
+                    this.timer = null
+                }
+            }, 60000)   
+        }
+        
+        
+    },
+    methods: {
+        showTime() {
+            let day = Math.floor(this.roomInfo.remain_time / 3600 / 24)
+            let hour = Math.floor((this.roomInfo.remain_time - day * 3600 * 24) / 3600)
+            let min = Math.floor(this.roomInfo.remain_time / 60) % 60
+            this.time.day = day >= 10 ? day + '' : '0' + day
+            this.time.hour = hour >= 10 ? hour + '' : '0' + hour
+            this.time.min = min >= 10 ? min + '' : '0' + min
+            console.log(this.time)
+        }
+    },
+    destroyed() {
+        // clearInterval(this.timer)
+        // this.timer = null
+    }
 }
 </script>
 <style scoped>
@@ -87,6 +129,7 @@ export default {
     width: 54px;
     height: 32px;
     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAAgAgMAAAAkpGPIAAABS2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMzggNzkuMTU5ODI0LCAyMDE2LzA5LzE0LTAxOjA5OjAxICAgICAgICAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIi8+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgo8P3hwYWNrZXQgZW5kPSJyIj8+IEmuOgAAAARnQU1BAACxjwv8YQUAAAABc1JHQgCuzhzpAAAADFBMVEUAAAAhISE1NTV9WgAaixYwAAAAAXRSTlMAQObYZgAAAChJREFUGNNjCAWDACjFMBS58SAqPgBKoXPXrwKC9QugFDoXv96hHzgAtt2dgS10fWIAAAAASUVORK5CYII=');
+    background-size: auto 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
